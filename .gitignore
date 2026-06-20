@@ -1,0 +1,12 @@
+node_modules
+.nuxt
+.output
+.env
+.env.*
+*.db
+*.db-journal
+*.db-wal
+data/
+*.log
+0.0.0.0/
+.DS_Store

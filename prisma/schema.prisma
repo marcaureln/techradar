@@ -1,0 +1,43 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Settings {
+  id          String   @id @default("singleton")
+  companyName String
+  logoPath    String?
+  setupDone   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Blip {
+  id              String        @id @default(cuid())
+  number          Int           @unique
+  name            String
+  quadrant        String
+  ring            String
+  description     String
+  notes           String?
+  isArchived      Boolean       @default(false)
+  createdAt       DateTime      @default(now())
+  lastEvaluatedAt DateTime      @default(now())
+  history         BlipHistory[]
+
+  @@index([quadrant, ring])
+}
+
+model BlipHistory {
+  id        String   @id @default(cuid())
+  blipId    String
+  blip      Blip     @relation(fields: [blipId], references: [id], onDelete: Cascade)
+  fromRing  String
+  toRing    String
+  changedAt DateTime @default(now())
+  changedBy String   @default("system")
+}

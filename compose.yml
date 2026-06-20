@@ -1,0 +1,14 @@
+services:
+  techradar:
+    image: ghcr.io/yourorg/techradar:latest
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - techradar-data:/data
+    environment:
+      DATABASE_URL: "file:/data/techradar.db"
+      UPLOAD_DIR: "/data/uploads"
+
+volumes:
+  techradar-data:
