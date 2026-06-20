@@ -4,7 +4,7 @@ import { useEventListener } from '@vueuse/core'
 import { QUADRANT_LABELS } from '#shared/lib/radar/constants'
 import type { Quadrant } from '#shared/types'
 
-const { open, show, hide, toggle } = useCommandPalette()
+const { open, mode, show, showBlips, hide, toggle } = useCommandPalette()
 const { focusQuadrant, reset } = useRadarView()
 const { data: blips } = useBlips()
 
@@ -21,7 +21,8 @@ interface Item {
 
 const quadrantKeys = Object.keys(QUADRANT_LABELS) as Quadrant[]
 
-const actions = computed<Item[]>(() => [
+const commandItems = computed<Item[]>(() => [
+  { id: 'search', label: 'Search blips…', hint: '/', run: () => enterBlipMode() },
   { id: 'add', label: 'Add blip', hint: 'Create', run: () => navigateTo('/?add=1') },
   { id: 'radar', label: 'Go to radar', hint: 'Navigate', run: () => navigateTo('/') },
   { id: 'review', label: 'Go to review', hint: 'Navigate', run: () => navigateTo('/review') },
@@ -30,10 +31,7 @@ const actions = computed<Item[]>(() => [
     id: `focus-${q}`,
     label: `Focus ${QUADRANT_LABELS[q]}`,
     hint: 'Radar',
-    run: () => {
-      focusQuadrant(q)
-      navigateTo('/')
-    },
+    run: () => { focusQuadrant(q); navigateTo('/') },
   })),
   { id: 'reset', label: 'Reset radar view', hint: 'Radar', run: () => { reset(); navigateTo('/') } },
 ])
@@ -49,10 +47,21 @@ const blipItems = computed<Item[]>(() =>
 
 const items = computed<Item[]>(() => {
   const q = query.value.trim().toLowerCase()
-  const all = [...actions.value, ...blipItems.value]
-  if (!q) return all
-  return all.filter((i) => i.label.toLowerCase().includes(q) || i.hint?.toLowerCase().includes(q))
+  const source = mode.value === 'blip' ? blipItems.value : commandItems.value
+  if (!q) return source
+  return source.filter((i) => i.label.toLowerCase().includes(q) || i.hint?.toLowerCase().includes(q))
 })
+
+const placeholder = computed(() =>
+  mode.value === 'blip' ? 'Search blips' : 'Search commands',
+)
+
+function enterBlipMode() {
+  mode.value = 'blip'
+  query.value = ''
+  activeIndex.value = 0
+  nextTick(() => inputEl.value?.focus())
+}
 
 watch(items, () => (activeIndex.value = 0))
 
@@ -82,15 +91,26 @@ function onKeydown(e: KeyboardEvent) {
     e.preventDefault()
     runActive()
   } else if (e.key === 'Escape') {
-    hide()
+    e.preventDefault()
+    // From blip search, step back to the command menu first.
+    if (mode.value === 'blip') { mode.value = 'command'; query.value = '' }
+    else hide()
   }
 }
 
-// Global Cmd/Ctrl+K toggle.
+// Global shortcuts: Cmd/Ctrl+K = command menu, "/" = blip search.
 useEventListener('keydown', (e: KeyboardEvent) => {
   if (e.key.toLowerCase() === 'k' && (e.metaKey || e.ctrlKey)) {
     e.preventDefault()
     toggle()
+    return
+  }
+  if (e.key === '/' && !open.value) {
+    const el = e.target as HTMLElement
+    const tag = el?.tagName
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || el?.isContentEditable) return
+    e.preventDefault()
+    showBlips()
   }
 })
 </script>
@@ -105,13 +125,16 @@ useEventListener('keydown', (e: KeyboardEvent) => {
     >
       <div v-if="open" class="fixed inset-0 z-[70] flex items-start justify-center bg-black/20 p-4 pt-[12vh]" @click.self="hide">
         <div class="w-full max-w-lg overflow-hidden rounded-xl border border-zinc-200 bg-white" @keydown="onKeydown">
-          <input
-            ref="inputEl"
-            v-model="query"
-            type="text"
-            placeholder="Search blips or run a command"
-            class="w-full border-b border-zinc-100 px-4 py-3.5 text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none"
-          />
+          <div class="flex items-center gap-2 border-b border-zinc-100 px-4">
+            <span v-if="mode === 'blip'" class="text-xs font-medium text-zinc-400">Blips</span>
+            <input
+              ref="inputEl"
+              v-model="query"
+              type="text"
+              :placeholder="placeholder"
+              class="w-full py-3.5 text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none"
+            />
+          </div>
           <ul class="max-h-80 overflow-y-auto py-1">
             <li v-if="!items.length" class="px-4 py-6 text-center text-sm text-zinc-400">No results.</li>
             <li

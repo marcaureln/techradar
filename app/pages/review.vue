@@ -6,8 +6,10 @@ import {
   getSortedRowModel,
 } from '@tanstack/vue-table'
 import { QUADRANT_COLORS, QUADRANT_LABELS, RING_LABELS } from '#shared/lib/radar/constants'
-import { isDue, daysUntilDue } from '#shared/lib/radar/review'
+import { isDue } from '#shared/lib/radar/review'
 import type { BlipWithHistory } from '#shared/types'
+
+const daysSince = (date: string) => Math.floor((Date.now() - new Date(date).getTime()) / 86_400_000)
 
 definePageMeta({
   layout: 'default',
@@ -83,9 +85,9 @@ const columns = [
     size: 130,
     cell: (info: any) => new Date(info.getValue()).toLocaleDateString(),
   },
-  { accessorKey: 'daysSince', header: 'Days Since', size: 100 },
-  { accessorKey: 'status', header: 'Status', size: 120 },
-  { accessorKey: 'actions', header: '', size: 150 },
+  { accessorKey: 'daysSince', header: 'Days Since', size: 100, enableSorting: false },
+  { accessorKey: 'status', header: 'Status', size: 120, enableSorting: false },
+  { accessorKey: 'actions', header: '', size: 150, enableSorting: false },
 ]
 
 const table = useVueTable({
@@ -93,6 +95,9 @@ const table = useVueTable({
   columns,
   getCoreRowModel: getCoreRowModel(),
   getSortedRowModel: getSortedRowModel(),
+  onSortingChange: (updater) => {
+    sorting.value = typeof updater === 'function' ? updater(sorting.value) : updater
+  },
   state: {
     get sorting() { return sorting.value },
   },
@@ -101,8 +106,11 @@ const table = useVueTable({
 
 <template>
   <div class="mx-auto max-w-7xl px-6 py-8">
-    <div class="mb-6 flex items-center justify-between">
-      <h1 class="text-lg font-medium text-zinc-900">Review</h1>
+    <div class="mb-6 flex items-end justify-between">
+      <div>
+        <h1 class="text-lg font-medium text-zinc-900">Review</h1>
+        <p class="text-sm text-zinc-500">Re-evaluate each blip every 90 days. Mark it reviewed to reset the clock.</p>
+      </div>
       <div class="flex gap-2">
         <button
           class="rounded-md px-3 py-1.5 text-sm font-medium transition-colors"
@@ -150,8 +158,17 @@ const table = useVueTable({
       <table class="w-full text-sm">
         <thead class="bg-zinc-50">
           <tr>
-            <th v-for="header in table.getHeaderGroups()[0]?.headers" :key="header.id" class="border-b border-zinc-200 px-3 py-2 text-left text-xs font-medium text-zinc-500">
-              {{ typeof header.column.columnDef.header === 'string' ? header.column.columnDef.header : header.id }}
+            <th
+              v-for="header in table.getHeaderGroups()[0]?.headers"
+              :key="header.id"
+              class="border-b border-zinc-200 px-3 py-2 text-left text-xs font-medium text-zinc-500"
+              :class="header.column.getCanSort() ? 'cursor-pointer select-none hover:text-zinc-700' : ''"
+              @click="header.column.getCanSort() && header.column.toggleSorting()"
+            >
+              <span class="inline-flex items-center gap-1">
+                {{ typeof header.column.columnDef.header === 'string' ? header.column.columnDef.header : header.id }}
+                <span v-if="header.column.getIsSorted()" class="text-zinc-400">{{ header.column.getIsSorted() === 'desc' ? '↓' : '↑' }}</span>
+              </span>
             </th>
           </tr>
         </thead>
@@ -184,7 +201,7 @@ const table = useVueTable({
             </td>
             <td class="px-3 py-2 text-zinc-600">{{ RING_LABELS[row.original.ring as keyof typeof RING_LABELS] }}</td>
             <td class="px-3 py-2 text-zinc-500">{{ new Date(row.original.lastEvaluatedAt).toLocaleDateString() }}</td>
-            <td class="px-3 py-2 text-zinc-500">{{ daysUntilDue(row.original) }}</td>
+            <td class="px-3 py-2 text-zinc-500">{{ daysSince(row.original.lastEvaluatedAt) }}d</td>
             <td class="px-3 py-2">
               <span
                 v-if="isDue(row.original)"

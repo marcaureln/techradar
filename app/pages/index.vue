@@ -62,8 +62,8 @@ watch(
 </script>
 
 <template>
-  <div class="relative z-40 mx-auto max-w-6xl px-4 py-6">
-    <div class="mb-4 flex items-center justify-end">
+  <div class="relative z-40 mx-auto flex h-full max-w-6xl flex-col px-4 py-4">
+    <div class="mb-3 flex shrink-0 items-center justify-end">
       <button
         class="inline-flex h-9 items-center gap-1.5 rounded-md bg-zinc-900 px-3.5 text-sm font-medium text-white transition-colors hover:bg-zinc-800"
         @click="openAdd"
@@ -75,7 +75,7 @@ watch(
       </button>
     </div>
 
-    <div class="flex gap-6">
+    <div class="flex min-h-0 flex-1 gap-6">
       <RadarSidebar
         class="hidden md:block"
         :blips="blips ?? []"
@@ -83,11 +83,9 @@ watch(
         :loading="isPending"
         @select="selectBlip"
       />
-      <div class="min-w-0 flex-1">
-        <div v-if="isPending" class="mx-auto w-full max-w-[600px]">
-          <Skeleton class="mx-auto aspect-square w-full rounded-full" />
-        </div>
-        <Radar v-else :blips="blips ?? []" @select="selectBlip" />
+      <div class="flex min-w-0 flex-1 items-center justify-center">
+        <Skeleton v-if="isPending" class="aspect-square w-full max-w-[560px] rounded-full" />
+        <Radar v-else class="h-full w-full" :blips="blips ?? []" @select="selectBlip" />
       </div>
     </div>
   </div>

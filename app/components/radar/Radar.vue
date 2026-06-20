@@ -23,6 +23,15 @@ const filteredBlips = computed(() =>
 
 const positions = computed(() => computeBlipPositions(filteredBlips.value))
 
+// The hovered blip's label is drawn in a separate top layer (below) so it is
+// never covered by another dot — without reordering/remounting the dots.
+const hoveredBlip = computed(() =>
+  hoveredId.value ? filteredBlips.value.find((b) => b.id === hoveredId.value) ?? null : null,
+)
+const hoveredPos = computed(() =>
+  hoveredId.value ? positions.value.get(hoveredId.value) ?? null : null,
+)
+
 const prevPositions = ref<Record<string, { x: number; y: number }>>({})
 
 onMounted(() => {
@@ -67,7 +76,7 @@ function onPointerDown(e: PointerEvent) {
   dragging.value = true
   moved = false
   last = { x: e.clientX, y: e.clientY }
-  ;(e.currentTarget as Element).setPointerCapture?.(e.pointerId)
+  // No setPointerCapture: it would steal the `click` event from blip dots.
 }
 function onPointerMove(e: PointerEvent) {
   if (!dragging.value) return
@@ -117,16 +126,18 @@ const quadrantKeys = Object.keys(QUADRANT_LABELS) as Quadrant[]
 </script>
 
 <template>
-  <div>
-    <RadarFilterChips :focused="focused" @focus="focusQuadrant" />
+  <div class="flex h-full flex-col">
+    <div class="shrink-0">
+      <RadarFilterChips :focused="focused" @focus="focusQuadrant" />
+    </div>
 
-    <div class="relative mx-auto mt-4" style="max-width: 600px">
+    <div class="relative mx-auto mt-3 flex min-h-0 w-full flex-1 items-center justify-center">
       <svg
         ref="svgEl"
         viewBox="0 0 560 560"
         preserveAspectRatio="xMidYMid meet"
-        class="w-full touch-none select-none"
-        :style="{ cursor: dragging ? 'grabbing' : 'grab' }"
+        class="h-full max-h-full w-full touch-none select-none"
+        :style="{ maxWidth: '600px', cursor: dragging ? 'grabbing' : 'grab' }"
         @wheel.prevent="onWheel"
         @pointerdown="onPointerDown"
         @pointermove="onPointerMove"
@@ -174,10 +185,36 @@ const quadrantKeys = Object.keys(QUADRANT_LABELS) as Quadrant[]
             :prev-x="prevPositions[blip.id]?.x"
             :prev-y="prevPositions[blip.id]?.y"
             :is-overdue="isDue(blip)"
-            :is-hovered="hoveredId === blip.id"
+            :scale="view.scale"
             @click="handleBlipClick(blip)"
             @hover="(v) => (hoveredId = v ? blip.id : null)"
           />
+
+          <!-- Hover label: top layer, counter-scaled to stay constant size. -->
+          <g
+            v-if="hoveredBlip && hoveredPos"
+            :style="{
+              transform: `scale(${1 / view.scale})`,
+              transformBox: 'view-box',
+              transformOrigin: `${hoveredPos.x}px ${hoveredPos.y}px`,
+            }"
+          >
+            <text
+              :x="hoveredPos.x"
+              :y="hoveredPos.y - 17"
+              text-anchor="middle"
+              font-size="11"
+              font-weight="500"
+              fill="#18181b"
+              stroke="#fafafa"
+              stroke-width="3.5"
+              paint-order="stroke"
+              stroke-linejoin="round"
+              class="pointer-events-none select-none"
+            >
+              {{ hoveredBlip.name }}
+            </text>
+          </g>
 
           <!-- Labels render last (on top of dots) with a halo, so a blip can
                never hide a label and the text stays legible over any fill. -->

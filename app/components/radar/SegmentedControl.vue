@@ -28,6 +28,7 @@ const selectedIndex = computed(() =>
     <button
       v-for="option in options"
       :key="option.value"
+      type="button"
       class="relative z-10 flex-1 rounded-md px-2 py-1.5 text-center text-xs font-medium transition-colors"
       :class="modelValue === option.value ? 'text-zinc-900' : 'text-zinc-500 hover:text-zinc-700'"
       :style="modelValue === option.value && option.color ? { color: option.color } : {}"

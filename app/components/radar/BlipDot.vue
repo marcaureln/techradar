@@ -11,10 +11,18 @@ const props = defineProps<{
   prevX?: number
   prevY?: number
   isOverdue: boolean
-  isHovered?: boolean
+  scale?: number
 }>()
 
 const emit = defineEmits<{ click: []; hover: [boolean] }>()
+
+// Counter-scale the marker by 1/zoom so dots and text keep a constant on-screen
+// size — only their positions spread out when the radar is zoomed.
+const markerStyle = computed(() => ({
+  transform: `scale(${1 / (props.scale || 1)})`,
+  transformBox: 'view-box' as const,
+  transformOrigin: `${props.x}px ${props.y}px`,
+}))
 
 const isNew = computed(() => props.prevX === undefined)
 const hasMoved = computed(() =>
@@ -37,55 +45,41 @@ const initial = computed(() => {
     :transition="isNew
       ? { type: 'spring', stiffness: 200, damping: 20 }
       : { type: 'spring', stiffness: 80, damping: 18 }"
-    :while-hover="{ scale: 1.15 }"
+    :while-hover="{ scale: 1.15, transition: { duration: 0.1 } }"
     @click="emit('click')"
     @mouseenter="emit('hover', true)"
     @mouseleave="emit('hover', false)"
   >
-    <motion.circle
-      v-if="isOverdue"
-      :cx="x"
-      :cy="y"
-      :r="13"
-      fill="none"
-      :stroke="QUADRANT_COLORS[blip.quadrant]"
-      stroke-width="2"
-      :animate="{ r: [13, 22], opacity: [0.7, 0] }"
-      :transition="{ duration: 1.8, repeat: Infinity, ease: 'easeOut' }"
-    />
-    <circle
-      :cx="x"
-      :cy="y"
-      :r="11"
-      :fill="QUADRANT_COLORS[blip.quadrant]"
-    />
-    <text
-      :x="x"
-      :y="y"
-      text-anchor="middle"
-      dominant-baseline="central"
-      font-size="9"
-      font-weight="500"
-      fill="white"
-      style="pointer-events: none; user-select: none"
-    >
-      {{ blip.number }}
-    </text>
-    <text
-      v-if="isHovered"
-      :x="x"
-      :y="y - 17"
-      text-anchor="middle"
-      font-size="11"
-      font-weight="500"
-      fill="#18181b"
-      stroke="#fafafa"
-      stroke-width="3.5"
-      paint-order="stroke"
-      stroke-linejoin="round"
-      style="pointer-events: none; user-select: none"
-    >
-      {{ blip.name }}
-    </text>
+    <g :style="markerStyle">
+      <motion.circle
+        v-if="isOverdue"
+        :cx="x"
+        :cy="y"
+        :r="13"
+        fill="none"
+        :stroke="QUADRANT_COLORS[blip.quadrant]"
+        stroke-width="2"
+        :animate="{ r: [13, 22], opacity: [0.7, 0] }"
+        :transition="{ duration: 1.8, repeat: Infinity, ease: 'easeOut' }"
+      />
+      <circle
+        :cx="x"
+        :cy="y"
+        :r="11"
+        :fill="QUADRANT_COLORS[blip.quadrant]"
+      />
+      <text
+        :x="x"
+        :y="y"
+        text-anchor="middle"
+        dominant-baseline="central"
+        font-size="9"
+        font-weight="500"
+        fill="white"
+        style="pointer-events: none; user-select: none"
+      >
+        {{ blip.number }}
+      </text>
+    </g>
   </motion.g>
 </template>

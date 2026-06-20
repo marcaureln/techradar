@@ -28,14 +28,12 @@ const { handleSubmit, values, setFieldValue, errors } = useForm({
         quadrant: props.blip.quadrant,
         ring: props.blip.ring,
         description: props.blip.description,
-        notes: props.blip.notes ?? '',
       }
     : {
         name: '',
         quadrant: 'techniques',
         ring: 'trial',
         description: '',
-        notes: '',
       },
 })
 
@@ -117,7 +115,9 @@ const ringOptions = (Object.keys(RING_LABELS) as Ring[]).map((r) => ({
       </div>
 
       <div>
-        <label class="mb-1.5 block text-sm font-medium text-zinc-700">Description</label>
+        <label class="mb-1.5 block text-sm font-medium text-zinc-700">
+          Description <span class="text-zinc-400">(optional)</span>
+        </label>
         <textarea
           :value="values.description"
           class="w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-zinc-400 focus:outline-none focus:ring-1 focus:ring-zinc-400"
@@ -127,20 +127,6 @@ const ringOptions = (Object.keys(RING_LABELS) as Ring[]).map((r) => ({
           @input="setFieldValue('description', ($event.target as HTMLTextAreaElement).value)"
         />
         <p v-if="errors.description" class="mt-1 text-xs text-red-500">{{ errors.description }}</p>
-      </div>
-
-      <div>
-        <label class="mb-1.5 block text-sm font-medium text-zinc-700">
-          Notes <span class="text-zinc-400">(optional)</span>
-        </label>
-        <textarea
-          :value="values.notes ?? ''"
-          class="w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-zinc-400 focus:outline-none focus:ring-1 focus:ring-zinc-400"
-          style="field-sizing: content"
-          rows="2"
-          placeholder="Additional context, links, or details"
-          @input="setFieldValue('notes', ($event.target as HTMLTextAreaElement).value)"
-        />
       </div>
 
       <div class="pt-2">

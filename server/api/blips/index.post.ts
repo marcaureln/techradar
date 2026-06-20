@@ -12,7 +12,7 @@ export default defineEventHandler(async (event) => {
       name: data.name,
       quadrant: data.quadrant,
       ring: data.ring,
-      description: data.description,
+      description: data.description ?? '',
       notes: data.notes ?? null,
     },
   })

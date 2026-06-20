@@ -34,6 +34,7 @@ export default defineNuxtConfig({
       include: [
         '@prisma/nuxt > @prisma/client',
         '@tanstack/vue-table',
+        '@vueuse/core',
       ],
     },
     server: {

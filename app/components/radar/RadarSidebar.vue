@@ -25,7 +25,7 @@ const groups = computed(() =>
 </script>
 
 <template>
-  <aside class="w-60 shrink-0 overflow-y-auto pr-1">
+  <aside class="h-full w-60 shrink-0 overflow-y-auto pr-1">
     <div v-if="loading" class="space-y-4">
       <div v-for="g in 3" :key="g" class="space-y-2">
         <Skeleton class="h-3 w-16" />
