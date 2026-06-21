@@ -61,7 +61,8 @@ export default defineNuxtConfig({
     plugins: [tailwindcss()],
     optimizeDeps: {
       include: [
-        '@prisma/nuxt > @prisma/client',
+        '@prisma/nuxt > @prisma/client', // CJS
+        '@tanstack/vue-query',
         '@tanstack/vue-table',
         '@vueuse/core',
       ],
