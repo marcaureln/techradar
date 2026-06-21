@@ -6,6 +6,7 @@ node_modules
 *.db
 *.db-journal
 *.db-wal
+*.db-shm
 data/
 *.log
 0.0.0.0/
