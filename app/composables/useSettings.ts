@@ -13,7 +13,7 @@ export function useSettings() {
 export function useUpdateSettings() {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: (input: { companyName: string; setupDone?: boolean }) =>
+    mutationFn: (input: { setupDone?: boolean }) =>
       $fetch<{ data: Settings }>('/api/settings', { method: 'PATCH', body: input }).then((r) => r.data),
     onMutate: async (input) => {
       await qc.cancelQueries({ queryKey: KEY })

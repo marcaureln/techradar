@@ -5,8 +5,8 @@ export default defineEventHandler(async (event) => {
 
   const settings = await prisma.settings.upsert({
     where: { id: 'singleton' },
-    update: { companyName: data.companyName, ...(data.setupDone !== undefined ? { setupDone: data.setupDone } : {}) },
-    create: { id: 'singleton', companyName: data.companyName, setupDone: data.setupDone ?? false },
+    update: { ...(data.setupDone !== undefined ? { setupDone: data.setupDone } : {}) },
+    create: { id: 'singleton', setupDone: data.setupDone ?? false },
   })
 
   return ok(settings)

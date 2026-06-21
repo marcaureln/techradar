@@ -4,7 +4,7 @@ export default defineEventHandler(async () => {
 
   if (!settings) {
     settings = await prisma.settings.create({
-      data: { id: 'singleton', companyName: '' },
+      data: { id: 'singleton' },
     })
   }
 

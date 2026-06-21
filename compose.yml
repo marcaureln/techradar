@@ -8,7 +8,6 @@ services:
       - techradar-data:/data
     environment:
       DATABASE_URL: "file:/data/techradar.db"
-      UPLOAD_DIR: "/data/uploads"
 
 volumes:
   techradar-data:

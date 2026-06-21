@@ -34,8 +34,6 @@ export interface BlipWithHistory extends Blip {
 
 export interface Settings {
   id: string
-  companyName: string
-  logoPath: string | null
   setupDone: boolean
   createdAt: string
   updatedAt: string
@@ -43,4 +41,4 @@ export interface Settings {
 
 export type CreateBlipInput = { name: string; quadrant: Quadrant; ring: Ring; description: string; notes?: string }
 export type UpdateBlipInput = Partial<CreateBlipInput> & { id?: string }
-export type SettingsInput = { companyName: string }
+export type SettingsInput = { setupDone?: boolean }

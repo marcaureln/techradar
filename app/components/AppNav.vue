@@ -1,24 +1,13 @@
 <script setup lang="ts">
-import { computed } from 'vue'
 import { useRoute } from 'nuxt/app'
 
-const { data: settings, isPending } = useSettings()
 const route = useRoute()
 const { show } = useCommandPalette()
-
-const logoUrl = computed(() => settings.value?.logoPath || null)
 </script>
 
 <template>
   <nav class="flex items-center justify-between border-b border-zinc-200 bg-white px-6 py-3">
     <div class="flex items-center gap-3">
-      <Skeleton v-if="isPending" class="h-8 w-8 rounded-md" />
-      <img
-        v-else-if="logoUrl"
-        :src="logoUrl"
-        alt="Logo"
-        class="h-8 w-8 rounded-md object-contain"
-      />
       <span class="font-title text-xl tracking-normal text-zinc-900">Tech Radar</span>
     </div>
     <div class="flex items-center gap-1">
