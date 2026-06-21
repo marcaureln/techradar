@@ -33,7 +33,7 @@ const color = computed(() => {
     :animate="{ scale: 1, opacity: 1 }"
     :exit="{ scale: 0.4, opacity: 0 }"
     :transition="{ duration: 0.18 }"
-    @click="emit('expand')"
+    @click.stop="emit('expand')"
   >
     <g :style="markerStyle">
       <circle :cx="x" :cy="y" r="14" fill="#fff" />

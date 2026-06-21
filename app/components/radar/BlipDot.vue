@@ -59,7 +59,7 @@ const initial = computed(() => {
       isNew ? { type: 'spring', stiffness: 200, damping: 20 } : { type: 'spring', stiffness: 80, damping: 18 }
     "
     :while-hover="{ scale: 1.15, transition: { duration: 0.1 } }"
-    @click="emit('click')"
+    @click.stop="emit('click')"
     @mouseenter="emit('hover', true)"
     @mouseleave="emit('hover', false)"
   >

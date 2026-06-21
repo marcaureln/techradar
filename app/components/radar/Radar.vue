@@ -23,6 +23,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   select: [blip: BlipWithHistory];
+  deselect: [];
 }>();
 
 const { view, focused, hoveredId, animating, zoomAt, panBy, focusQuadrant } = useRadarView();
@@ -99,7 +100,6 @@ function pinch() {
 
 function onPointerDown(e: PointerEvent) {
   if (e.pointerType === 'mouse' && e.button !== 0) return;
-  svgEl.value?.setPointerCapture(e.pointerId);
   pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
   if (pointers.size === 2) {
     dragging.value = false;
@@ -152,6 +152,11 @@ function handleBlipClick(blip: BlipWithHistory) {
   emit('select', blip);
 }
 
+function onBackgroundClick() {
+  if (moved) return;
+  emit('deselect');
+}
+
 function quadrantArc(q: Quadrant): string {
   const start = QUADRANT_START[q];
   const r = RMAX;
@@ -192,11 +197,13 @@ const quadrantKeys = Object.keys(QUADRANT_LABELS) as Quadrant[];
           cursor: dragging ? 'grabbing' : 'grab',
           transition: 'max-width 0.25s ease',
         }"
+        @click="onBackgroundClick"
         @wheel.prevent="onWheel"
         @pointerdown="onPointerDown"
         @pointermove="onPointerMove"
         @pointerup="onPointerUp"
         @pointercancel="onPointerUp"
+        @pointerleave="onPointerUp"
       >
         <g
           :style="{

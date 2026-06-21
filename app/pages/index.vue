@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
 import { motion, AnimatePresence } from 'motion-v';
+import { onClickOutside } from '@vueuse/core';
 import type { BlipWithHistory } from '#shared/types';
 
 definePageMeta({
@@ -29,6 +30,13 @@ function clearSelection() {
   delete query.blip;
   router.replace({ query });
 }
+
+// Close the detail panel on any click outside it, except the radar and sidebar,
+// which handle their own selection (so clicking another blip switches panels).
+const detailPanel = ref(null);
+const radarArea = ref<HTMLElement | null>(null);
+const sidebarArea = ref<HTMLElement | null>(null);
+onClickOutside(detailPanel, () => selectedBlip.value && clearSelection(), { ignore: [radarArea, sidebarArea] });
 
 const showAddSheet = ref(false);
 const editingBlip = ref<BlipWithHistory | null>(null);
@@ -66,6 +74,7 @@ watch(
   <div class="relative z-40 mx-auto flex h-full max-w-7xl flex-col px-4 pt-10 pb-4">
     <div class="flex min-h-0 flex-1 gap-6">
       <div
+        ref="sidebarArea"
         class="hidden h-full shrink-0 overflow-hidden md:block"
         :style="{ width: hideSidebar ? '0px' : '14rem', transition: 'width 0.25s ease' }"
       >
@@ -77,9 +86,9 @@ watch(
           @select="selectBlip"
         />
       </div>
-      <div class="flex min-w-0 flex-1 items-center justify-center">
+      <div ref="radarArea" class="flex min-w-0 flex-1 items-center justify-center">
         <RadarSkeleton v-if="isPending" />
-        <Radar v-else class="h-full w-full" :blips="blips ?? []" @select="selectBlip" />
+        <Radar v-else class="h-full w-full" :blips="blips ?? []" @select="selectBlip" @deselect="clearSelection" />
       </div>
       <div
         class="hidden h-full shrink-0 md:block"
@@ -90,9 +99,14 @@ watch(
   </div>
 
   <ClientOnly>
-    <div v-if="selectedBlip" class="fixed inset-0 z-30" @click="clearSelection" />
     <AnimatePresence>
-      <RadarDetailPanel v-if="selectedBlip" :blip="selectedBlip" @close="clearSelection" @edit="openEdit" />
+      <RadarDetailPanel
+        v-if="selectedBlip"
+        ref="detailPanel"
+        :blip="selectedBlip"
+        @close="clearSelection"
+        @edit="openEdit"
+      />
     </AnimatePresence>
   </ClientOnly>
 
