@@ -34,7 +34,7 @@ const filteredBlips = computed(() =>
 
 const positions = computed(() => computeBlipPositions(filteredBlips.value));
 
-const { useClusters, hideSidebar } = useRadarSettings();
+const { useClusters, hideSidebar, hideLegend } = useRadarSettings();
 const clusters = computed(() =>
   useClusters.value
     ? clusterBlips(filteredBlips.value, positions.value, view.value.scale)
@@ -324,6 +324,10 @@ const quadrantKeys = Object.keys(QUADRANT_LABELS) as Quadrant[];
           </template>
         </g>
       </svg>
+
+      <div v-if="!hideLegend" class="absolute top-3 right-3 z-10 hidden sm:block">
+        <RadarLegend />
+      </div>
 
       <div class="absolute right-3 bottom-3">
         <RadarZoomControls />
