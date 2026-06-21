@@ -1,15 +1,10 @@
 FROM node:24-alpine AS base
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
-FROM base AS deps
-WORKDIR /app
-COPY package.json pnpm-lock.yaml pnpm-metadata.json ./
-RUN pnpm install --frozen-lockfile
-
 FROM base AS builder
 WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+RUN pnpm install --frozen-lockfile
 RUN pnpm prisma generate
 RUN pnpm build
 
@@ -21,7 +16,6 @@ ENV NUXT_HOST=0.0.0.0
 ENV NUXT_PORT=3000
 COPY --from=builder /app/.output ./.output
 COPY --from=builder /app/prisma ./prisma
-COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
-COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
+COPY --from=builder /app/node_modules ./node_modules
 EXPOSE 3000
-CMD ["sh", "-c", "npx prisma migrate deploy && node .output/server/index.mjs"]
+CMD ["sh", "-c", "node_modules/.bin/prisma migrate deploy && node .output/server/index.mjs"]
