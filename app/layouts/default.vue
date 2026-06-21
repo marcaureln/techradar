@@ -6,5 +6,6 @@
     </main>
     <AppCommandPalette />
     <Toaster />
+    <AppInfo />
   </div>
 </template>

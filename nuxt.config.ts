@@ -2,9 +2,11 @@ import { resolve } from 'node:path'
 import { createRequire } from 'node:module'
 import tailwindcss from '@tailwindcss/vite'
 
+const pkg = createRequire(import.meta.url)('./package.json')
+
 // Build a minimal Phosphor collection with only the icons the app uses, so the
-// server bundle ships those 7 icons instead of the whole ~9k-icon set.
-const USED_ICONS = ['plus', 'minus', 'x', 'link', 'check', 'arrow-up', 'arrow-down']
+// server bundle ships those icons instead of the whole ~9k-icon set.
+const USED_ICONS = ['plus', 'minus', 'x', 'link', 'check', 'arrow-up', 'arrow-down', 'info']
 const phFull = createRequire(import.meta.url)('@iconify-json/ph/icons.json')
 const phSubset = {
   prefix: phFull.prefix,
@@ -74,6 +76,9 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     databaseUrl: process.env.DATABASE_URL ?? `file:${resolve(__dirname, 'prisma/techradar.db')}`,
+    public: {
+      version: pkg.version,
+    },
   },
 
   app: {
