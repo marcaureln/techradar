@@ -23,17 +23,19 @@ Hold). One radar per instance, no auth (operators secure it at the proxy layer).
 
 ## Conventions
 - Keep it readable for someone who knows Vue but not this codebase.
+- Comments: only for non-obvious intent, and keep them short. Don't restate the code.
 - Quadrant/ring taxonomy is fixed — never make it configurable.
 - Route handlers use `prisma` directly (no abstraction layer).
 - Selection/focus state lives in the URL where useful (`?blip=<number>`, short, no UIDs).
 
 ## Icons — use Phosphor via `@nuxt/icon`
-- Use `<Icon name="ph:<name>" class="h-4 w-4" />`. **Do not hand-roll `<svg>` icons.**
-- Only a small subset of Phosphor is bundled (offline). When you use a **new**
-  icon, add its `ph:<name>` to `USED_ICONS` in `nuxt.config.ts` (it feeds both
-  the server subset collection and the client bundle) — otherwise it won't render.
-- The `<svg>` in `Radar.vue` (the radar chart) and `setup.vue` (decorative
-  background) are graphics, not icons — leave them.
+- Use `<Icon name="ph:<name>" class="h-4 w-4" />`. Do not hand-roll `<svg>` icons.
+- Only the used subset is bundled (offline). For a new icon, add its name to `USED_ICONS` in `nuxt.config.ts` or it won't render.
+- The `<svg>` in `Radar.vue` (chart) and `setup.vue` (decorative) are graphics, not icons — leave them.
+
+## Fonts — `@nuxt/fonts`
+- Body uses **Satoshi**; the nav title uses **Bitcount Prop Single** (`font-title`).
+- Declare new families in `fonts.families` in `nuxt.config.ts`; they are self-hosted at build.
 
 ## Git
 - Never add a `Co-Authored-By` trailer to commits.

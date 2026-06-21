@@ -31,6 +31,14 @@ export default defineNuxtConfig({
 
   css: ['~/assets/css/main.css'],
 
+  // Self-hosted at build; Satoshi for body, Bitcount Prop Single for the title.
+  fonts: {
+    families: [
+      { name: 'Satoshi', provider: 'fontshare', weights: [400, 500], styles: ['normal'] },
+      { name: 'Bitcount Prop Single', provider: 'google', weights: [400], styles: ['normal'] },
+    ],
+  },
+
   compatibilityDate: '2025-07-01',
 
   devtools: { enabled: true },

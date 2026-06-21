@@ -19,10 +19,7 @@ const logoUrl = computed(() => settings.value?.logoPath || null)
         alt="Logo"
         class="h-8 w-8 rounded-md object-contain"
       />
-      <Skeleton v-if="isPending" class="h-4 w-32" />
-      <span v-else class="text-base font-medium text-zinc-900">
-        {{ settings?.companyName || 'Tech Radar' }}
-      </span>
+      <span class="font-title text-xl tracking-normal text-zinc-900">Tech Radar</span>
     </div>
     <div class="flex items-center gap-1">
       <NuxtLink
