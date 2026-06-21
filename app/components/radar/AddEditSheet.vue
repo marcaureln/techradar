@@ -20,8 +20,9 @@ const schema = computed(() =>
   isEdit.value ? toTypedSchema(updateBlipSchema) : toTypedSchema(createBlipSchema),
 )
 
-const { handleSubmit, values, setFieldValue, errors } = useForm({
+const { handleSubmit, values, setFieldValue, errors, meta } = useForm({
   validationSchema: schema.value,
+  validateOnMount: false,
   initialValues: props.blip
     ? {
         name: props.blip.name,
@@ -91,7 +92,7 @@ const ringOptions = (Object.keys(RING_LABELS) as Ring[]).map((r) => ({
           placeholder="Technology name"
           @input="setFieldValue('name', ($event.target as HTMLInputElement).value)"
         />
-        <p v-if="errors.name" class="mt-1 text-xs text-red-500">{{ errors.name }}</p>
+        <p v-if="meta.dirty && errors.name" class="mt-1 text-xs text-red-500">{{ errors.name }}</p>
       </div>
 
       <div>
@@ -124,13 +125,13 @@ const ringOptions = (Object.keys(RING_LABELS) as Ring[]).map((r) => ({
           placeholder="What is this technology and why is it on the radar?"
           @input="setFieldValue('description', ($event.target as HTMLTextAreaElement).value)"
         />
-        <p v-if="errors.description" class="mt-1 text-xs text-red-500">{{ errors.description }}</p>
+        <p v-if="meta.dirty && errors.description" class="mt-1 text-xs text-red-500">{{ errors.description }}</p>
       </div>
 
       <div class="pt-2">
         <button
           type="submit"
-          :disabled="loading"
+          :disabled="loading || !values.name?.trim()"
           class="w-full rounded-md bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-zinc-800 disabled:cursor-not-allowed disabled:bg-zinc-300"
         >
           {{ loading ? 'Saving...' : (isEdit ? 'Update blip' : 'Add blip') }}
