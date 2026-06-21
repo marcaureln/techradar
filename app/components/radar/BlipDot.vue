@@ -20,7 +20,7 @@ const dirPath = computed(() =>
 );
 const dirTransform = computed(() => {
   const a = (Math.atan2(props.y - CY, props.x - CX) * 180) / Math.PI;
-  const deg = props.direction === 'up' ? a + 270 : a + 90;
+  const deg = props.direction === 'up' ? a + 90 : a + 270;
   return `rotate(${deg} ${props.x} ${props.y})`;
 });
 
