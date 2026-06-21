@@ -87,14 +87,43 @@ function onWheel(e: WheelEvent) {
 const dragging = ref(false);
 let moved = false;
 let last = { x: 0, y: 0 };
+const pointers = new Map<number, { x: number; y: number }>();
+let pinchDist = 0;
+
+function pinch() {
+  const pts = [...pointers.values()];
+  const a = pts[0]!;
+  const b = pts[1]!;
+  return { dist: Math.hypot(a.x - b.x, a.y - b.y), mid: { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 } };
+}
 
 function onPointerDown(e: PointerEvent) {
-  if (e.button !== 0) return;
-  dragging.value = true;
-  moved = false;
-  last = { x: e.clientX, y: e.clientY };
+  if (e.pointerType === 'mouse' && e.button !== 0) return;
+  svgEl.value?.setPointerCapture(e.pointerId);
+  pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  if (pointers.size === 2) {
+    dragging.value = false;
+    pinchDist = pinch().dist;
+  } else {
+    dragging.value = true;
+    moved = false;
+    last = { x: e.clientX, y: e.clientY };
+  }
 }
 function onPointerMove(e: PointerEvent) {
+  if (!pointers.has(e.pointerId)) return;
+  pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+  if (pointers.size >= 2) {
+    const { dist, mid } = pinch();
+    if (pinchDist > 0) {
+      moved = true;
+      zoomAt(toViewbox(mid.x, mid.y), dist / pinchDist);
+    }
+    pinchDist = dist;
+    return;
+  }
+
   if (!dragging.value) return;
   const r = svgEl.value!.getBoundingClientRect();
   const f = 560 / r.width;
@@ -104,8 +133,16 @@ function onPointerMove(e: PointerEvent) {
   panBy(dx * f, dy * f);
   last = { x: e.clientX, y: e.clientY };
 }
-function onPointerUp() {
-  dragging.value = false;
+function onPointerUp(e: PointerEvent) {
+  pointers.delete(e.pointerId);
+  if (pointers.size < 2) pinchDist = 0;
+  if (pointers.size === 1) {
+    const p = [...pointers.values()][0]!;
+    last = { x: p.x, y: p.y };
+    dragging.value = true;
+  } else if (pointers.size === 0) {
+    dragging.value = false;
+  }
 }
 
 const transform = computed(() => `translate(${view.value.tx}px, ${view.value.ty}px) scale(${view.value.scale})`);
@@ -159,7 +196,7 @@ const quadrantKeys = Object.keys(QUADRANT_LABELS) as Quadrant[];
         @pointerdown="onPointerDown"
         @pointermove="onPointerMove"
         @pointerup="onPointerUp"
-        @pointerleave="onPointerUp"
+        @pointercancel="onPointerUp"
       >
         <g
           :style="{
