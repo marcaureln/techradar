@@ -26,27 +26,29 @@ function chipStyle(key: Quadrant) {
 </script>
 
 <template>
-  <div class="flex flex-wrap items-center justify-center gap-2">
-    <button
-      v-for="key in quadrantKeys"
-      :key="key"
-      class="inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-all"
-      :style="chipStyle(key)"
-      @click="emit('focus', focused === key ? null : key)"
-    >
-      <span
-        class="inline-block h-2 w-2 rounded-full"
-        :style="{ backgroundColor: focused === key ? '#fff' : QUADRANT_COLORS[key] }"
-      />
-      {{ QUADRANT_LABELS[key] }}
-    </button>
+  <div class="flex items-center justify-center">
+    <div class="relative flex flex-wrap items-center justify-center gap-2">
+      <button
+        v-for="key in quadrantKeys"
+        :key="key"
+        class="inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-all"
+        :style="chipStyle(key)"
+        @click="emit('focus', focused === key ? null : key)"
+      >
+        <span
+          class="inline-block h-2 w-2 rounded-full"
+          :style="{ backgroundColor: focused === key ? '#fff' : QUADRANT_COLORS[key] }"
+        />
+        {{ QUADRANT_LABELS[key] }}
+      </button>
 
-    <button
-      v-if="focused"
-      class="ml-1 rounded-full px-3 py-1.5 text-xs font-medium text-zinc-500 transition-colors hover:text-zinc-900"
-      @click="emit('focus', null)"
-    >
-      View all
-    </button>
+      <button
+        v-if="focused"
+        class="absolute left-full top-1/2 ml-3 -translate-y-1/2 whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-medium text-zinc-500 transition-colors hover:text-zinc-900"
+        @click="emit('focus', null)"
+      >
+        View all
+      </button>
+    </div>
   </div>
 </template>
