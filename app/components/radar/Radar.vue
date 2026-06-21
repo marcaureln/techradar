@@ -12,7 +12,7 @@ import {
   RMAX,
 } from '#shared/lib/radar/constants';
 import { clusterBlips } from '#shared/lib/radar/cluster';
-import { blipDirection } from '#shared/lib/radar/direction';
+import { blipDirection, isNewBlip } from '#shared/lib/radar/direction';
 import type { BlipWithHistory, Quadrant } from '#shared/types';
 
 const CACHE_KEY = 'techradar:blip-positions';
@@ -204,6 +204,7 @@ const quadrantKeys = Object.keys(QUADRANT_LABELS) as Quadrant[];
               :prev-y="prevPositions[c.blips[0]!.id]?.y"
               :scale="view.scale"
               :direction="blipDirection(c.blips[0]!)"
+              :fresh="isNewBlip(c.blips[0]!)"
               @click="handleBlipClick(c.blips[0]!)"
               @hover="(v) => (hoveredId = v ? c.blips[0]!.id : null)"
             />

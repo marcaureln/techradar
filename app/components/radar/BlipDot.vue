@@ -12,6 +12,7 @@ const props = defineProps<{
   prevY?: number;
   scale?: number;
   direction?: 'up' | 'down' | null;
+  fresh?: boolean;
 }>();
 
 const DIR_R = 15.4;
@@ -69,6 +70,16 @@ const initial = computed(() => {
         :transform="dirTransform"
         :fill="QUADRANT_COLORS[blip.quadrant]"
         fill-opacity="0.55"
+      />
+      <circle
+        v-else-if="fresh"
+        :cx="x"
+        :cy="y"
+        :r="DIR_R"
+        fill="none"
+        :stroke="QUADRANT_COLORS[blip.quadrant]"
+        stroke-width="1.5"
+        stroke-opacity="0.6"
       />
       <circle :cx="x" :cy="y" :r="11" :fill="QUADRANT_COLORS[blip.quadrant]" />
       <text
