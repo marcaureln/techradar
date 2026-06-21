@@ -62,21 +62,19 @@ const groups = computed(() =>
               @mouseenter="hoveredId = blip.id"
               @mouseleave="hoveredId = null"
             >
-              <span class="flex h-3.5 w-3.5 shrink-0 items-center justify-center">
-                <Icon
-                  v-if="isDue(blip)"
-                  name="ph:warning"
-                  class="h-3.5 w-3.5 text-red-500"
-                  title="Needs review"
-                />
-              </span>
               <span
                 class="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-medium text-white"
                 :style="{ backgroundColor: QUADRANT_COLORS[blip.quadrant] }"
               >
                 {{ blip.number }}
               </span>
-              <span class="truncate">{{ blip.name }}</span>
+              <span class="min-w-0 flex-1 truncate">{{ blip.name }}</span>
+              <Icon
+                v-if="isDue(blip)"
+                name="ph:warning"
+                class="h-3.5 w-3.5 shrink-0 text-red-500"
+                title="Needs review"
+              />
             </button>
           </li>
         </ul>

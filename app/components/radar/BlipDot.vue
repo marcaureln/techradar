@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { motion } from 'motion-v'
-import { QUADRANT_COLORS } from '#shared/lib/radar/constants'
+import { QUADRANT_COLORS, CX, CY } from '#shared/lib/radar/constants'
 import type { BlipWithHistory } from '#shared/types'
 
 const props = defineProps<{
@@ -10,18 +10,23 @@ const props = defineProps<{
   y: number
   prevX?: number
   prevY?: number
-  isOverdue: boolean
   scale?: number
   direction?: 'up' | 'down' | null
 }>()
 
-// Direction is a small semicircle hugging the dot: top = moved toward adopt,
-// bottom = moved toward hold. Drawn behind the dot so only a crescent shows.
-const DIR_R = 14
-const dirPath = computed(() => {
-  if (props.direction === 'up') return `M ${props.x - DIR_R} ${props.y} A ${DIR_R} ${DIR_R} 0 0 0 ${props.x + DIR_R} ${props.y} Z`
-  if (props.direction === 'down') return `M ${props.x - DIR_R} ${props.y} A ${DIR_R} ${DIR_R} 0 0 1 ${props.x + DIR_R} ${props.y} Z`
-  return null
+// Direction is a semicircle behind the dot, rotated to follow the radial ring
+// direction: it bulges toward the centre when moving up (toward adopt) and
+// outward when moving down (toward hold). Coloured a lighter tint of the blip.
+const DIR_R = 15.4
+const dirPath = computed(() =>
+  props.direction
+    ? `M ${props.x - DIR_R} ${props.y} A ${DIR_R} ${DIR_R} 0 0 0 ${props.x + DIR_R} ${props.y} Z`
+    : null,
+)
+const dirTransform = computed(() => {
+  const a = (Math.atan2(props.y - CY, props.x - CX) * 180) / Math.PI
+  const deg = props.direction === 'up' ? a + 270 : a + 90
+  return `rotate(${deg} ${props.x} ${props.y})`
 })
 
 const emit = defineEmits<{ click: []; hover: [boolean] }>()
@@ -61,17 +66,12 @@ const initial = computed(() => {
     @mouseleave="emit('hover', false)"
   >
     <g :style="markerStyle">
-      <path v-if="dirPath" :d="dirPath" fill="#18181b" />
-      <motion.circle
-        v-if="isOverdue"
-        :cx="x"
-        :cy="y"
-        :r="13"
-        fill="none"
-        :stroke="QUADRANT_COLORS[blip.quadrant]"
-        stroke-width="2"
-        :animate="{ r: [13, 22], opacity: [0.7, 0] }"
-        :transition="{ duration: 1.8, repeat: Infinity, ease: 'easeOut' }"
+      <path
+        v-if="dirPath"
+        :d="dirPath"
+        :transform="dirTransform"
+        :fill="QUADRANT_COLORS[blip.quadrant]"
+        fill-opacity="0.55"
       />
       <circle
         :cx="x"

@@ -2,7 +2,6 @@
 import { ref, computed, onMounted, watch, nextTick } from 'vue'
 import { computeBlipPositions } from '#shared/lib/radar/positions'
 import { QUADRANT_COLORS, QUADRANT_LABELS, QUADRANT_START, RING_OUTER, CX, CY, RMAX } from '#shared/lib/radar/constants'
-import { isDue } from '#shared/lib/radar/review'
 import { clusterBlips } from '#shared/lib/radar/cluster'
 import { blipDirection } from '#shared/lib/radar/direction'
 import type { BlipWithHistory, Quadrant } from '#shared/types'
@@ -189,7 +188,6 @@ const quadrantKeys = Object.keys(QUADRANT_LABELS) as Quadrant[]
               :y="positions.get(cluster.blips[0]!.id)?.y ?? CY"
               :prev-x="prevPositions[cluster.blips[0]!.id]?.x"
               :prev-y="prevPositions[cluster.blips[0]!.id]?.y"
-              :is-overdue="isDue(cluster.blips[0]!)"
               :scale="view.scale"
               :direction="blipDirection(cluster.blips[0]!)"
               @click="handleBlipClick(cluster.blips[0]!)"
