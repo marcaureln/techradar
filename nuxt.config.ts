@@ -22,7 +22,7 @@ export default defineNuxtConfig({
     compatibilityVersion: 4,
   },
 
-  modules: ['@nuxt/fonts', '@prisma/nuxt', '@nuxt/icon'],
+  modules: ['@nuxt/fonts', '@nuxt/icon'],
 
   // Ship only the icons actually used instead of the whole Phosphor
   // collection. Keeps the bundle small and fully offline (server + client).
@@ -63,7 +63,6 @@ export default defineNuxtConfig({
     plugins: [tailwindcss()],
     optimizeDeps: {
       include: [
-        '@prisma/nuxt > @prisma/client', // CJS
         '@tanstack/vue-query',
         '@tanstack/vue-table',
         '@vee-validate/zod',
