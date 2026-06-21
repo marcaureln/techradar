@@ -2,10 +2,6 @@ import { ref } from 'vue'
 import { useStorage } from '@vueuse/core'
 import type { Quadrant } from '#shared/types'
 
-// Single source of truth for the radar's pan/zoom transform, shared across the
-// radar, zoom controls, and command palette. The transform is applied to the
-// radar <g> as `translate(tx,ty) scale(scale)` in SVG user space (the svg
-// viewBox is 0 0 560 560, centre 280,280).
 
 const FOCUS_SCALE = 1.85
 const FOCUS_POINT: Record<Quadrant, { cx: number; cy: number }> = {
@@ -26,7 +22,6 @@ interface View {
 
 const clampScale = (s: number) => Math.min(MAX_SCALE, Math.max(MIN_SCALE, s))
 
-// Persisted so a reload resumes exactly where the user left the radar.
 const view = useStorage<View>('techradar:view', { scale: 1, tx: 0, ty: 0 })
 const focused = useStorage<Quadrant | null>('techradar:focus', null)
 const hoveredId = ref<string | null>(null)
@@ -42,7 +37,6 @@ function commit(next: View, animate = false) {
   }
 }
 
-// Zoom keeping the given viewBox point fixed under the cursor.
 function zoomAt(point: { x: number; y: number }, factor: number) {
   const s = view.value.scale
   const s2 = clampScale(s * factor)

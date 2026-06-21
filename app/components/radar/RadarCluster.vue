@@ -13,14 +13,12 @@ const props = defineProps<{
 
 const emit = defineEmits<{ expand: [] }>()
 
-// Counter-scale so the marker stays a constant on-screen size, like blip dots.
 const markerStyle = computed(() => ({
   transform: `scale(${1 / (props.scale || 1)})`,
   transformBox: 'view-box' as const,
   transformOrigin: `${props.x}px ${props.y}px`,
 }))
 
-// Quadrant colour when all members share one, otherwise neutral.
 const color = computed(() => {
   const q = props.blips[0]?.quadrant
   return props.blips.every((b) => b.quadrant === q) ? QUADRANT_COLORS[q] : '#71717a'

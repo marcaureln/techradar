@@ -25,8 +25,6 @@ const filteredBlips = computed(() =>
 
 const positions = computed(() => computeBlipPositions(filteredBlips.value))
 
-// Aggregate blips that overlap at the current zoom; clusters split as you zoom in.
-// When clustering is turned off, every blip renders as its own dot.
 const { useClusters, hideSidebar } = useRadarSettings()
 const clusters = computed(() =>
   useClusters.value
@@ -39,8 +37,6 @@ const clusters = computed(() =>
 const singles = computed(() => clusters.value.filter((c) => c.blips.length === 1))
 const groups = computed(() => clusters.value.filter((c) => c.blips.length > 1))
 
-// The hovered blip's label is drawn in a separate top layer (below) so it is
-// never covered by another dot — without reordering/remounting the dots.
 const hoveredBlip = computed(() =>
   hoveredId.value ? filteredBlips.value.find((b) => b.id === hoveredId.value) ?? null : null,
 )
@@ -71,7 +67,6 @@ watch(positions, () => {
   nextTick(() => persistPositions())
 })
 
-// ── pan / zoom ──────────────────────────────────────────────────────────
 const svgEl = ref<SVGSVGElement | null>(null)
 
 function toViewbox(clientX: number, clientY: number) {
@@ -92,7 +87,6 @@ function onPointerDown(e: PointerEvent) {
   dragging.value = true
   moved = false
   last = { x: e.clientX, y: e.clientY }
-  // No setPointerCapture: it would steal the `click` event from blip dots.
 }
 function onPointerMove(e: PointerEvent) {
   if (!dragging.value) return
@@ -113,11 +107,10 @@ const transform = computed(
 )
 
 function handleBlipClick(blip: BlipWithHistory) {
-  if (moved) return // ignore the click that ends a pan
+  if (moved) return
   emit('select', blip)
 }
 
-// ── geometry helpers ────────────────────────────────────────────────────
 function quadrantArc(q: Quadrant): string {
   const start = QUADRANT_START[q]
   const r = RMAX
@@ -217,7 +210,6 @@ const quadrantKeys = Object.keys(QUADRANT_LABELS) as Quadrant[]
             />
           </AnimatePresence>
 
-          <!-- Hover label: top layer, counter-scaled to stay constant size. -->
           <g
             v-if="hoveredBlip && hoveredPos"
             :style="{
@@ -243,8 +235,6 @@ const quadrantKeys = Object.keys(QUADRANT_LABELS) as Quadrant[]
             </text>
           </g>
 
-          <!-- Labels render last (on top of dots) with a halo, so a blip can
-               never hide a label and the text stays legible over any fill. -->
           <template v-for="(r, i) in RING_OUTER" :key="'rl-' + i">
             <text
               :x="CX + 6"

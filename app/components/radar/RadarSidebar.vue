@@ -43,7 +43,6 @@ const groups = computed(() =>
         <div class="group/ring relative mb-1 flex items-center gap-2 px-2">
           <span class="text-xs font-medium uppercase tracking-wide text-zinc-400">{{ group.label }}</span>
           <span class="text-xs text-zinc-300">{{ group.blips.length }}</span>
-          <!-- Hover the ring name to read what the ring means. -->
           <div
             class="pointer-events-none absolute left-2 top-full z-50 mt-1 w-52 rounded-lg border border-zinc-200 bg-white p-3 text-xs leading-relaxed text-zinc-600 opacity-0 transition-opacity duration-150 group-hover/ring:opacity-100"
           >

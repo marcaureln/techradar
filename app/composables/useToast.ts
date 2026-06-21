@@ -7,7 +7,6 @@ export interface Toast {
 
 let counter = 0
 
-// Lightweight global toasts with an optional one-click action (used for Undo).
 export function useToast() {
   const toasts = useState<Toast[]>('toasts', () => [])
 

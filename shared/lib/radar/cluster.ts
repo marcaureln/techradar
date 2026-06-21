@@ -4,12 +4,8 @@ export interface BlipCluster<T> {
   blips: T[]
 }
 
-// Merge distance in viewBox units at scale 1 (roughly a marker diameter).
 const MERGE_DIST = 24
 
-// Greedily group blips whose on-screen positions overlap. The threshold is
-// divided by the zoom scale, so clusters split apart as you zoom in (markers
-// are constant size, their positions spread).
 export function clusterBlips<T extends { id: string }>(
   blips: T[],
   positions: Map<string, { x: number; y: number }>,

@@ -14,9 +14,6 @@ const props = defineProps<{
   direction?: 'up' | 'down' | null
 }>()
 
-// Direction is a semicircle behind the dot, rotated to follow the radial ring
-// direction: it bulges toward the centre when moving up (toward adopt) and
-// outward when moving down (toward hold). Coloured a lighter tint of the blip.
 const DIR_R = 15.4
 const dirPath = computed(() =>
   props.direction
@@ -31,8 +28,6 @@ const dirTransform = computed(() => {
 
 const emit = defineEmits<{ click: []; hover: [boolean] }>()
 
-// Counter-scale the marker by 1/zoom so dots and text keep a constant on-screen
-// size — only their positions spread out when the radar is zoomed.
 const markerStyle = computed(() => ({
   transform: `scale(${1 / (props.scale || 1)})`,
   transformBox: 'view-box' as const,

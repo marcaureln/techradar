@@ -1,10 +1,7 @@
 <script setup lang="ts">
-// Loading placeholder shaped like the real radar so the layout doesn't shift
-// when data arrives. Mirrors Radar.vue's structure (chips, svg, zoom controls).
 const RINGS = [57.5, 115, 172.5, 230]
 const CHIP_WIDTHS = ['w-28', 'w-20', 'w-24', 'w-40']
 
-// A scattered set of placeholder blips inside the radar (all within r=230).
 const DOTS = [
   { x: 338, y: 196 }, { x: 214, y: 168 }, { x: 372, y: 318 }, { x: 196, y: 352 },
   { x: 256, y: 244 }, { x: 318, y: 262 }, { x: 210, y: 300 }, { x: 356, y: 232 },

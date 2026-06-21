@@ -13,7 +13,6 @@ const router = useRouter()
 const { data: blips, isPending } = useBlips()
 const { hideSidebar } = useRadarSettings()
 
-// Selection lives in the URL (?blip=<number>) — shareable, resumable, no UID.
 const selectedBlip = computed<BlipWithHistory | null>(() => {
   const n = Number(route.query.blip)
   if (!n) return null
@@ -49,7 +48,6 @@ function closeSheet() {
   editingBlip.value = null
 }
 
-// The command palette opens the add sheet via ?add=1.
 watch(
   () => route.query.add,
   (v) => {
@@ -67,8 +65,6 @@ watch(
 <template>
   <div class="relative z-40 mx-auto flex h-full max-w-7xl flex-col px-4 pb-4 pt-10">
     <div class="flex min-h-0 flex-1 gap-6">
-      <!-- Sidebar + mirror spacer collapse their width in sync with the radar
-           growing, so hiding the sidebar reads as one smooth motion. -->
       <div
         class="hidden h-full shrink-0 overflow-hidden md:block"
         :style="{ width: hideSidebar ? '0px' : '14rem', transition: 'width 0.25s ease' }"
@@ -93,8 +89,6 @@ watch(
     </div>
   </div>
 
-  <!-- Click-outside backdrop dismisses the panel; main content sits above it (z-40).
-       Client-only: the panel is animated (motion-v) and never present on SSR. -->
   <ClientOnly>
     <div v-if="selectedBlip" class="fixed inset-0 z-30" @click="clearSelection" />
     <AnimatePresence>

@@ -3,8 +3,6 @@ import type { BlipWithHistory } from '../../types/index'
 
 export type BlipDirection = 'up' | 'down' | null
 
-// Movement since the last ring change: 'up' means it moved toward adopt
-// (a lower ring index), 'down' toward hold. No history means no direction.
 export function blipDirection(blip: Pick<BlipWithHistory, 'history'>): BlipDirection {
   const latest = blip.history?.[0]
   if (!latest) return null

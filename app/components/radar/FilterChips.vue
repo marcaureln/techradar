@@ -17,7 +17,6 @@ function chipStyle(key: Quadrant) {
   if (props.focused === key) {
     return { borderColor: color, backgroundColor: color, color: '#fff' }
   }
-  // Another quadrant is focused → dim the rest.
   if (props.focused) {
     return { borderColor: '#e4e4e7', backgroundColor: 'transparent', color: '#a1a1aa' }
   }
