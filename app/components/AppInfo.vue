@@ -10,14 +10,14 @@ const version = useRuntimeConfig().public.version;
 </script>
 
 <template>
-  <div ref="root" class="fixed right-4 bottom-4 z-40">
+  <div ref="root" class="fixed bottom-4 left-4 z-40">
     <Transition
       enter-active-class="transition duration-150 ease-out"
       enter-from-class="translate-y-1 opacity-0"
       leave-active-class="transition duration-100 ease-in"
       leave-to-class="translate-y-1 opacity-0"
     >
-      <div v-if="open" class="absolute right-0 bottom-11 w-60 rounded-lg border border-zinc-200 bg-white p-4 text-sm">
+      <div v-if="open" class="absolute bottom-11 left-0 w-60 rounded-lg border border-zinc-200 bg-white p-4 text-sm">
         <div class="flex items-baseline justify-between">
           <span class="font-medium text-zinc-900">Tech Radar</span>
           <span class="text-xs text-zinc-400">v{{ version }}</span>
