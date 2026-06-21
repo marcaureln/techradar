@@ -68,9 +68,7 @@ watch(
         class="inline-flex h-9 items-center gap-1.5 rounded-md bg-zinc-900 px-3.5 text-sm font-medium text-white transition-colors hover:bg-zinc-800"
         @click="openAdd"
       >
-        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-        </svg>
+        <Icon name="ph:plus" class="h-4 w-4" />
         Add blip
       </button>
     </div>
@@ -90,16 +88,19 @@ watch(
     </div>
   </div>
 
-  <!-- Click-outside backdrop dismisses the panel; main content sits above it (z-40). -->
-  <div v-if="selectedBlip" class="fixed inset-0 z-30" @click="clearSelection" />
-  <AnimatePresence>
-    <RadarDetailPanel
-      v-if="selectedBlip"
-      :blip="selectedBlip"
-      @close="clearSelection"
-      @edit="openEdit"
-    />
-  </AnimatePresence>
+  <!-- Click-outside backdrop dismisses the panel; main content sits above it (z-40).
+       Client-only: the panel is animated (motion-v) and never present on SSR. -->
+  <ClientOnly>
+    <div v-if="selectedBlip" class="fixed inset-0 z-30" @click="clearSelection" />
+    <AnimatePresence>
+      <RadarDetailPanel
+        v-if="selectedBlip"
+        :blip="selectedBlip"
+        @close="clearSelection"
+        @edit="openEdit"
+      />
+    </AnimatePresence>
+  </ClientOnly>
 
   <Teleport to="body">
     <div v-if="showAddSheet" class="fixed inset-0 z-40 bg-black/30" @click="closeSheet" />

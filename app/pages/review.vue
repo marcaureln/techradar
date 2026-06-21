@@ -167,7 +167,11 @@ const table = useVueTable({
             >
               <span class="inline-flex items-center gap-1">
                 {{ typeof header.column.columnDef.header === 'string' ? header.column.columnDef.header : header.id }}
-                <span v-if="header.column.getIsSorted()" class="text-zinc-400">{{ header.column.getIsSorted() === 'desc' ? '↓' : '↑' }}</span>
+                <Icon
+                  v-if="header.column.getIsSorted()"
+                  :name="header.column.getIsSorted() === 'desc' ? 'ph:arrow-down' : 'ph:arrow-up'"
+                  class="h-3 w-3 text-zinc-400"
+                />
               </span>
             </th>
           </tr>

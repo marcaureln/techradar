@@ -78,9 +78,7 @@ const ringOptions = (Object.keys(RING_LABELS) as Ring[]).map((r) => ({
         class="rounded-md p-1 text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-600"
         @click="emit('close')"
       >
-        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-        </svg>
+        <Icon name="ph:x" class="h-5 w-5" />
       </button>
     </div>
 

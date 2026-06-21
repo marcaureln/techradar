@@ -10,9 +10,7 @@ const { view, zoomByButton, reset } = useRadarView()
       aria-label="Zoom out"
       @click="zoomByButton(1 / 1.3)"
     >
-      <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14" />
-      </svg>
+      <Icon name="ph:minus" class="h-4 w-4" />
     </button>
     <button
       class="flex h-9 min-w-9 items-center justify-center rounded-md px-2 text-xs font-medium tabular-nums text-zinc-500 transition-colors hover:bg-zinc-100"
@@ -28,9 +26,7 @@ const { view, zoomByButton, reset } = useRadarView()
       aria-label="Zoom in"
       @click="zoomByButton(1.3)"
     >
-      <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v14M5 12h14" />
-      </svg>
+      <Icon name="ph:plus" class="h-4 w-4" />
     </button>
   </div>
 </template>
