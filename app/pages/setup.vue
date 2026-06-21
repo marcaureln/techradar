@@ -1,38 +1,38 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { SAMPLE_BLIPS } from '#shared/lib/sampleBlips'
+import { ref } from 'vue';
+import { SAMPLE_BLIPS } from '#shared/lib/sampleBlips';
 
 definePageMeta({
   layout: 'setup',
-})
+});
 
-const addSamples = ref(true)
-const loading = ref(false)
-const error = ref('')
+const addSamples = ref(true);
+const loading = ref(false);
+const error = ref('');
 
-const updateSettings = useUpdateSettings()
-const createBlip = useCreateBlip()
-const router = useRouter()
+const updateSettings = useUpdateSettings();
+const createBlip = useCreateBlip();
+const router = useRouter();
 
 async function open() {
-  loading.value = true
-  error.value = ''
+  loading.value = true;
+  error.value = '';
   try {
     if (addSamples.value) {
       for (const { reviewDaysAgo, ...blip } of SAMPLE_BLIPS) {
         await createBlip.mutateAsync(
           reviewDaysAgo
             ? { ...blip, lastEvaluatedAt: new Date(Date.now() - reviewDaysAgo * 86_400_000).toISOString() }
-            : blip,
-        )
+            : blip
+        );
       }
     }
-    await updateSettings.mutateAsync({ setupDone: true })
-    await router.push('/')
-  } catch (e: any) {
-    error.value = e.message || 'Something went wrong'
+    await updateSettings.mutateAsync({ setupDone: true });
+    await router.push('/');
+  } catch (e) {
+    error.value = e instanceof Error ? e.message : 'Something went wrong';
   } finally {
-    loading.value = false
+    loading.value = false;
   }
 }
 </script>
@@ -44,7 +44,9 @@ async function open() {
       <p class="text-sm text-zinc-500">Track technology adoption across your team.</p>
     </div>
 
-    <label class="flex cursor-pointer items-start gap-2.5 rounded-md border border-zinc-200 p-3 text-left transition-colors hover:border-zinc-300">
+    <label
+      class="flex cursor-pointer items-start gap-2.5 rounded-md border border-zinc-200 p-3 text-left transition-colors hover:border-zinc-300"
+    >
       <input v-model="addSamples" type="checkbox" class="mt-0.5 h-4 w-4 accent-zinc-900" />
       <span class="text-sm">
         <span class="block font-medium text-zinc-800">Start with sample blips</span>

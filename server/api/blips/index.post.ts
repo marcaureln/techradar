@@ -1,10 +1,10 @@
-import { createBlipSchema } from '#shared/validations/blip'
+import { createBlipSchema } from '#shared/validations/blip';
 
 export default defineEventHandler(async (event) => {
-  const data = await validateBody(event, createBlipSchema)
+  const data = await validateBody(event, createBlipSchema);
 
-  const maxNumber = await prisma.blip.aggregate({ _max: { number: true } })
-  const number = (maxNumber._max.number ?? 0) + 1
+  const maxNumber = await prisma.blip.aggregate({ _max: { number: true } });
+  const number = (maxNumber._max.number ?? 0) + 1;
 
   const blip = await prisma.blip.create({
     data: {
@@ -16,7 +16,7 @@ export default defineEventHandler(async (event) => {
       notes: data.notes ?? null,
       ...(data.lastEvaluatedAt ? { lastEvaluatedAt: new Date(data.lastEvaluatedAt) } : {}),
     },
-  })
+  });
 
-  return ok(blip)
-})
+  return ok(blip);
+});

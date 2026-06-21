@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import { z } from 'zod';
 
 export const createBlipSchema = z.object({
   name: z.string().min(1).max(80),
@@ -7,6 +7,6 @@ export const createBlipSchema = z.object({
   description: z.string().max(2000).optional(),
   notes: z.string().max(2000).optional(),
   lastEvaluatedAt: z.string().datetime().optional(),
-})
+});
 
-export const updateBlipSchema = createBlipSchema.partial()
+export const updateBlipSchema = createBlipSchema.partial();
