@@ -39,6 +39,6 @@ export interface Settings {
   updatedAt: string
 }
 
-export type CreateBlipInput = { name: string; quadrant: Quadrant; ring: Ring; description: string; notes?: string }
+export type CreateBlipInput = { name: string; quadrant: Quadrant; ring: Ring; description: string; notes?: string; lastEvaluatedAt?: string }
 export type UpdateBlipInput = Partial<CreateBlipInput> & { id?: string }
 export type SettingsInput = { setupDone?: boolean }

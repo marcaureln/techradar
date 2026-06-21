@@ -19,8 +19,12 @@ async function open() {
   error.value = ''
   try {
     if (addSamples.value) {
-      for (const blip of SAMPLE_BLIPS) {
-        await createBlip.mutateAsync(blip)
+      for (const { reviewDaysAgo, ...blip } of SAMPLE_BLIPS) {
+        await createBlip.mutateAsync(
+          reviewDaysAgo
+            ? { ...blip, lastEvaluatedAt: new Date(Date.now() - reviewDaysAgo * 86_400_000).toISOString() }
+            : blip,
+        )
       }
     }
     await updateSettings.mutateAsync({ setupDone: true })

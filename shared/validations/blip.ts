@@ -6,6 +6,7 @@ export const createBlipSchema = z.object({
   ring: z.enum(['adopt', 'trial', 'assess', 'hold']),
   description: z.string().max(2000).optional(),
   notes: z.string().max(2000).optional(),
+  lastEvaluatedAt: z.string().datetime().optional(),
 })
 
 export const updateBlipSchema = createBlipSchema.partial()

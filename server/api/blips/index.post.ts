@@ -14,6 +14,7 @@ export default defineEventHandler(async (event) => {
       ring: data.ring,
       description: data.description ?? '',
       notes: data.notes ?? null,
+      ...(data.lastEvaluatedAt ? { lastEvaluatedAt: new Date(data.lastEvaluatedAt) } : {}),
     },
   })
 
