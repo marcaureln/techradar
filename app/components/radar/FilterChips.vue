@@ -1,26 +1,26 @@
 <script setup lang="ts">
-import { QUADRANT_COLORS, QUADRANT_LABELS } from '#shared/lib/radar/constants'
-import type { Quadrant } from '#shared/types'
+import { QUADRANT_COLORS, QUADRANT_LABELS } from '#shared/lib/radar/constants';
+import type { Quadrant } from '#shared/types';
 
 const props = defineProps<{
-  focused: Quadrant | null
-}>()
+  focused: Quadrant | null;
+}>();
 
 const emit = defineEmits<{
-  focus: [quadrant: Quadrant | null]
-}>()
+  focus: [quadrant: Quadrant | null];
+}>();
 
-const quadrantKeys = Object.keys(QUADRANT_LABELS) as Quadrant[]
+const quadrantKeys = Object.keys(QUADRANT_LABELS) as Quadrant[];
 
 function chipStyle(key: Quadrant) {
-  const color = QUADRANT_COLORS[key]
+  const color = QUADRANT_COLORS[key];
   if (props.focused === key) {
-    return { borderColor: color, backgroundColor: color, color: '#fff' }
+    return { borderColor: color, backgroundColor: color, color: '#fff' };
   }
   if (props.focused) {
-    return { borderColor: '#e4e4e7', backgroundColor: 'transparent', color: '#a1a1aa' }
+    return { borderColor: '#e4e4e7', backgroundColor: 'transparent', color: '#a1a1aa' };
   }
-  return { borderColor: `${color}40`, backgroundColor: `${color}10`, color }
+  return { borderColor: `${color}40`, backgroundColor: `${color}10`, color };
 }
 </script>
 
@@ -43,7 +43,7 @@ function chipStyle(key: Quadrant) {
 
       <button
         v-if="focused"
-        class="absolute left-full top-1/2 ml-3 -translate-y-1/2 whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-medium text-zinc-500 transition-colors hover:text-zinc-900"
+        class="absolute top-1/2 left-full ml-3 -translate-y-1/2 rounded-full px-3 py-1.5 text-xs font-medium whitespace-nowrap text-zinc-500 transition-colors hover:text-zinc-900"
         @click="emit('focus', null)"
       >
         View all

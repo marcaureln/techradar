@@ -1,7 +1,7 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
-import type { BlipWithHistory, CreateBlipInput, UpdateBlipInput } from '#shared/types'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query';
+import type { BlipWithHistory, CreateBlipInput, UpdateBlipInput } from '#shared/types';
 
-const KEY = ['blips'] as const
+const KEY = ['blips'] as const;
 
 export function useBlips(archived = false) {
   return useQuery({
@@ -10,7 +10,7 @@ export function useBlips(archived = false) {
       $fetch<{ data: BlipWithHistory[] }>('/api/blips', {
         params: archived ? { archived: 'true' } : {},
       }).then((r) => r.data),
-  })
+  });
 }
 
 export function useBlip(id: () => string) {
@@ -18,17 +18,17 @@ export function useBlip(id: () => string) {
     queryKey: [...KEY, id()],
     queryFn: () => $fetch<{ data: BlipWithHistory }>(`/api/blips/${id()}`).then((r) => r.data),
     enabled: computed(() => !!id()),
-  })
+  });
 }
 
 export function useCreateBlip() {
-  const qc = useQueryClient()
+  const qc = useQueryClient();
   return useMutation({
     mutationFn: (input: CreateBlipInput) =>
       $fetch<{ data: BlipWithHistory }>('/api/blips', { method: 'POST', body: input }).then((r) => r.data),
     onMutate: async (newBlip) => {
-      await qc.cancelQueries({ queryKey: KEY })
-      const previous = qc.getQueryData<BlipWithHistory[]>(KEY)
+      await qc.cancelQueries({ queryKey: KEY });
+      const previous = qc.getQueryData<BlipWithHistory[]>(KEY);
       qc.setQueryData<BlipWithHistory[]>(KEY, (old) => [
         ...(old ?? []),
         {
@@ -40,72 +40,70 @@ export function useCreateBlip() {
           isArchived: false,
           history: [],
         },
-      ])
-      return { previous }
+      ]);
+      return { previous };
     },
     onError: (_e, _v, ctx) => qc.setQueryData(KEY, ctx?.previous),
     onSettled: () => qc.invalidateQueries({ queryKey: KEY }),
-  })
+  });
 }
 
 export function useUpdateBlip() {
-  const qc = useQueryClient()
+  const qc = useQueryClient();
   return useMutation({
     mutationFn: ({ id, ...input }: UpdateBlipInput & { id: string }) =>
       $fetch<{ data: BlipWithHistory }>(`/api/blips/${id}`, { method: 'PATCH', body: input }).then((r) => r.data),
     onMutate: async ({ id, ...update }) => {
-      await qc.cancelQueries({ queryKey: KEY })
-      const previous = qc.getQueryData<BlipWithHistory[]>(KEY)
-      qc.setQueryData<BlipWithHistory[]>(KEY, (old) =>
-        old?.map((b) => (b.id === id ? { ...b, ...update } : b)),
-      )
-      return { previous }
+      await qc.cancelQueries({ queryKey: KEY });
+      const previous = qc.getQueryData<BlipWithHistory[]>(KEY);
+      qc.setQueryData<BlipWithHistory[]>(KEY, (old) => old?.map((b) => (b.id === id ? { ...b, ...update } : b)));
+      return { previous };
     },
     onError: (_e, _v, ctx) => qc.setQueryData(KEY, ctx?.previous),
     onSettled: () => qc.invalidateQueries({ queryKey: KEY }),
-  })
+  });
 }
 
 export function useArchiveBlip() {
-  const qc = useQueryClient()
+  const qc = useQueryClient();
   return useMutation({
     mutationFn: (id: string) =>
       $fetch<{ data: BlipWithHistory }>(`/api/blips/${id}`, { method: 'DELETE' }).then((r) => r.data),
     onMutate: async (id) => {
-      await qc.cancelQueries({ queryKey: KEY })
-      const previous = qc.getQueryData<BlipWithHistory[]>(KEY)
-      qc.setQueryData<BlipWithHistory[]>(KEY, (old) => old?.filter((b) => b.id !== id))
-      return { previous }
+      await qc.cancelQueries({ queryKey: KEY });
+      const previous = qc.getQueryData<BlipWithHistory[]>(KEY);
+      qc.setQueryData<BlipWithHistory[]>(KEY, (old) => old?.filter((b) => b.id !== id));
+      return { previous };
     },
     onError: (_e, _v, ctx) => qc.setQueryData(KEY, ctx?.previous),
     onSettled: () => qc.invalidateQueries({ queryKey: KEY }),
-  })
+  });
 }
 
 export function useMarkReviewed() {
-  const qc = useQueryClient()
+  const qc = useQueryClient();
   return useMutation({
     mutationFn: (id: string) =>
       $fetch<{ data: BlipWithHistory }>(`/api/blips/${id}/review`, { method: 'POST' }).then((r) => r.data),
     onMutate: async (id) => {
-      await qc.cancelQueries({ queryKey: KEY })
-      const previous = qc.getQueryData<BlipWithHistory[]>(KEY)
-      const now = new Date().toISOString()
+      await qc.cancelQueries({ queryKey: KEY });
+      const previous = qc.getQueryData<BlipWithHistory[]>(KEY);
+      const now = new Date().toISOString();
       qc.setQueryData<BlipWithHistory[]>(KEY, (old) =>
-        old?.map((b) => (b.id === id ? { ...b, lastEvaluatedAt: now } : b)),
-      )
-      return { previous }
+        old?.map((b) => (b.id === id ? { ...b, lastEvaluatedAt: now } : b))
+      );
+      return { previous };
     },
     onError: (_e, _v, ctx) => qc.setQueryData(KEY, ctx?.previous),
     onSettled: () => qc.invalidateQueries({ queryKey: KEY }),
-  })
+  });
 }
 
 export function useRestoreBlip() {
-  const qc = useQueryClient()
+  const qc = useQueryClient();
   return useMutation({
     mutationFn: (id: string) =>
       $fetch<{ data: BlipWithHistory }>(`/api/blips/${id}/restore`, { method: 'POST' }).then((r) => r.data),
     onSettled: () => qc.invalidateQueries({ queryKey: KEY }),
-  })
+  });
 }

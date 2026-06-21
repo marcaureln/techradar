@@ -1,24 +1,22 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import { useForm } from 'vee-validate'
-import { toTypedSchema } from '@vee-validate/zod'
-import { createBlipSchema, updateBlipSchema } from '#shared/validations/blip'
-import { QUADRANT_LABELS, RING_LABELS, QUADRANT_COLORS } from '#shared/lib/radar/constants'
-import type { BlipWithHistory, Quadrant, Ring } from '#shared/types'
+import { ref, computed } from 'vue';
+import { useForm } from 'vee-validate';
+import { toTypedSchema } from '@vee-validate/zod';
+import { createBlipSchema, updateBlipSchema } from '#shared/validations/blip';
+import { QUADRANT_LABELS, RING_LABELS, QUADRANT_COLORS } from '#shared/lib/radar/constants';
+import type { BlipWithHistory, CreateBlipInput, Quadrant, Ring } from '#shared/types';
 
 const props = defineProps<{
-  blip?: BlipWithHistory | null
-}>()
+  blip?: BlipWithHistory | null;
+}>();
 
 const emit = defineEmits<{
-  close: []
-}>()
+  close: [];
+}>();
 
-const isEdit = computed(() => !!props.blip)
+const isEdit = computed(() => !!props.blip);
 
-const schema = computed(() =>
-  isEdit.value ? toTypedSchema(updateBlipSchema) : toTypedSchema(createBlipSchema),
-)
+const schema = computed(() => (isEdit.value ? toTypedSchema(updateBlipSchema) : toTypedSchema(createBlipSchema)));
 
 const { handleSubmit, values, setFieldValue, errors, meta } = useForm({
   validationSchema: schema.value,
@@ -36,37 +34,37 @@ const { handleSubmit, values, setFieldValue, errors, meta } = useForm({
         ring: 'trial',
         description: '',
       },
-})
+});
 
-const createBlip = useCreateBlip()
-const updateBlip = useUpdateBlip()
+const createBlip = useCreateBlip();
+const updateBlip = useUpdateBlip();
 
-const loading = ref(false)
+const loading = ref(false);
 
 const onSubmit = handleSubmit(async (values) => {
-  loading.value = true
+  loading.value = true;
   try {
     if (isEdit.value && props.blip) {
-      await updateBlip.mutateAsync({ id: props.blip.id, ...values })
+      await updateBlip.mutateAsync({ id: props.blip.id, ...values });
     } else {
-      await createBlip.mutateAsync(values as any)
+      await createBlip.mutateAsync(values as CreateBlipInput);
     }
-    emit('close')
+    emit('close');
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-})
+});
 
 const quadrantOptions = (Object.keys(QUADRANT_LABELS) as Quadrant[]).map((q) => ({
   value: q,
   label: QUADRANT_LABELS[q],
   color: QUADRANT_COLORS[q],
-}))
+}));
 
 const ringOptions = (Object.keys(RING_LABELS) as Ring[]).map((r) => ({
   value: r,
   label: RING_LABELS[r],
-}))
+}));
 </script>
 
 <template>
@@ -88,7 +86,7 @@ const ringOptions = (Object.keys(RING_LABELS) as Ring[]).map((r) => ({
         <label class="mb-1.5 block text-sm font-medium text-zinc-700">Name</label>
         <input
           :value="values.name"
-          class="w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-zinc-400 focus:outline-none focus:ring-1 focus:ring-zinc-400"
+          class="w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-zinc-400 focus:ring-1 focus:ring-zinc-400 focus:outline-none"
           placeholder="Technology name"
           @input="setFieldValue('name', ($event.target as HTMLInputElement).value)"
         />
@@ -119,7 +117,7 @@ const ringOptions = (Object.keys(RING_LABELS) as Ring[]).map((r) => ({
         </label>
         <textarea
           :value="values.description"
-          class="w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-zinc-400 focus:outline-none focus:ring-1 focus:ring-zinc-400"
+          class="w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-zinc-400 focus:ring-1 focus:ring-zinc-400 focus:outline-none"
           style="field-sizing: content"
           rows="3"
           placeholder="What is this technology and why is it on the radar?"
@@ -134,7 +132,7 @@ const ringOptions = (Object.keys(RING_LABELS) as Ring[]).map((r) => ({
           :disabled="loading || !values.name?.trim()"
           class="w-full rounded-md bg-zinc-900 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-zinc-800 disabled:cursor-not-allowed disabled:bg-zinc-300"
         >
-          {{ loading ? 'Saving...' : (isEdit ? 'Update blip' : 'Add blip') }}
+          {{ loading ? 'Saving...' : isEdit ? 'Update blip' : 'Add blip' }}
         </button>
       </div>
     </form>

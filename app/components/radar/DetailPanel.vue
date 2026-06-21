@@ -1,59 +1,59 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import { motion } from 'motion-v'
-import { useClipboard } from '@vueuse/core'
-import { QUADRANT_COLORS, QUADRANT_LABELS, RING_LABELS } from '#shared/lib/radar/constants'
-import { isDue, daysUntilDue } from '#shared/lib/radar/review'
-import type { BlipWithHistory } from '#shared/types'
+import { ref, computed } from 'vue';
+import { motion } from 'motion-v';
+import { useClipboard } from '@vueuse/core';
+import { QUADRANT_COLORS, QUADRANT_LABELS, RING_LABELS } from '#shared/lib/radar/constants';
+import { isDue, daysUntilDue } from '#shared/lib/radar/review';
+import type { BlipWithHistory } from '#shared/types';
 
 const props = defineProps<{
-  blip: BlipWithHistory
-}>()
+  blip: BlipWithHistory;
+}>();
 
 const emit = defineEmits<{
-  close: []
-  edit: [blip: BlipWithHistory]
-}>()
+  close: [];
+  edit: [blip: BlipWithHistory];
+}>();
 
-const markReviewed = useMarkReviewed()
-const archiveBlip = useArchiveBlip()
-const restoreBlip = useRestoreBlip()
-const { show } = useToast()
-const { copy } = useClipboard()
+const markReviewed = useMarkReviewed();
+const archiveBlip = useArchiveBlip();
+const restoreBlip = useRestoreBlip();
+const { show } = useToast();
+const { copy } = useClipboard();
 
-const showNotes = ref(false)
-const copied = ref(false)
-const overdue = computed(() => isDue(props.blip))
-const daysLeft = computed(() => daysUntilDue(props.blip))
+const showNotes = ref(false);
+const copied = ref(false);
+const overdue = computed(() => isDue(props.blip));
+const daysLeft = computed(() => daysUntilDue(props.blip));
 
 function handleReview() {
-  markReviewed.mutate(props.blip.id)
+  markReviewed.mutate(props.blip.id);
 }
 
 function handleArchive() {
-  const id = props.blip.id
-  archiveBlip.mutate(id)
-  emit('close')
-  show('Blip archived.', { actionLabel: 'Undo', action: () => restoreBlip.mutate(id) })
+  const id = props.blip.id;
+  archiveBlip.mutate(id);
+  emit('close');
+  show('Blip archived.', { actionLabel: 'Undo', action: () => restoreBlip.mutate(id) });
 }
 
 function copyLink() {
-  copy(`${location.origin}/?blip=${props.blip.number}`)
-  copied.value = true
-  setTimeout(() => (copied.value = false), 1500)
+  copy(`${location.origin}/?blip=${props.blip.number}`);
+  copied.value = true;
+  setTimeout(() => (copied.value = false), 1500);
 }
 
 function handleKeydown(e: KeyboardEvent) {
-  if (e.key === 'Escape') emit('close')
+  if (e.key === 'Escape') emit('close');
 }
 
 onMounted(() => {
-  window.addEventListener('keydown', handleKeydown)
-})
+  window.addEventListener('keydown', handleKeydown);
+});
 
 onUnmounted(() => {
-  window.removeEventListener('keydown', handleKeydown)
-})
+  window.removeEventListener('keydown', handleKeydown);
+});
 </script>
 
 <template>
@@ -62,8 +62,8 @@ onUnmounted(() => {
     :animate="{ x: 0 }"
     :exit="{ x: '100%' }"
     :transition="{ type: 'spring', stiffness: 300, damping: 30 }"
-    class="fixed right-0 top-0 z-50 h-full w-96 overflow-y-auto border-l border-zinc-200 bg-white"
-    @click.self
+    class="fixed top-0 right-0 z-50 h-full w-96 overflow-y-auto border-l border-zinc-200 bg-white"
+    @click.stop
   >
     <div class="p-6">
       <div class="mb-4 flex items-start justify-between">
@@ -114,10 +114,7 @@ onUnmounted(() => {
       <p class="mb-4 text-sm leading-relaxed text-zinc-600">{{ blip.description }}</p>
 
       <div v-if="blip.notes" class="mb-4">
-        <button
-          class="text-xs font-medium text-zinc-500 hover:text-zinc-700"
-          @click="showNotes = !showNotes"
-        >
+        <button class="text-xs font-medium text-zinc-500 hover:text-zinc-700" @click="showNotes = !showNotes">
           {{ showNotes ? 'Hide notes' : 'Show notes' }}
         </button>
         <div v-if="showNotes" class="mt-2 rounded-md border border-zinc-200 p-3 text-sm text-zinc-600">
@@ -126,13 +123,9 @@ onUnmounted(() => {
       </div>
 
       <div v-if="blip.history.length > 0" class="mb-4">
-        <h3 class="mb-2 text-xs font-medium uppercase tracking-wide text-zinc-400">Ring history</h3>
+        <h3 class="mb-2 text-xs font-medium tracking-wide text-zinc-400 uppercase">Ring history</h3>
         <div class="space-y-1">
-          <div
-            v-for="h in blip.history"
-            :key="h.id"
-            class="flex items-center gap-2 text-xs text-zinc-500"
-          >
+          <div v-for="h in blip.history" :key="h.id" class="flex items-center gap-2 text-xs text-zinc-500">
             <span class="font-medium">{{ RING_LABELS[h.fromRing] }}</span>
             <span>&rarr;</span>
             <span class="font-medium">{{ RING_LABELS[h.toRing] }}</span>

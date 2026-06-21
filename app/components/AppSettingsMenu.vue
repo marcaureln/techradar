@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { onClickOutside } from '@vueuse/core'
+import { ref } from 'vue';
+import { onClickOutside } from '@vueuse/core';
 
-const { hideSidebar, useClusters } = useRadarSettings()
-const open = ref(false)
-const root = ref<HTMLElement | null>(null)
-onClickOutside(root, () => (open.value = false))
+const { hideSidebar, useClusters } = useRadarSettings();
+const open = ref(false);
+const root = ref<HTMLElement | null>(null);
+onClickOutside(root, () => (open.value = false));
 </script>
 
 <template>
@@ -27,7 +27,7 @@ onClickOutside(root, () => (open.value = false))
     >
       <div
         v-if="open"
-        class="absolute right-0 top-11 z-50 w-56 rounded-lg border border-zinc-200 bg-white p-1.5 text-sm"
+        class="absolute top-11 right-0 z-50 w-56 rounded-lg border border-zinc-200 bg-white p-1.5 text-sm"
       >
         <div class="flex items-center justify-between rounded-md px-2 py-2">
           <span class="text-zinc-700">Hide sidebar</span>

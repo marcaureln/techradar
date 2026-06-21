@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { view, zoomByButton, reset } = useRadarView()
+const { view, zoomByButton, reset } = useRadarView();
 </script>
 
 <template>
@@ -13,7 +13,7 @@ const { view, zoomByButton, reset } = useRadarView()
       <Icon name="ph:minus" class="h-4 w-4" />
     </button>
     <button
-      class="flex h-9 min-w-9 items-center justify-center rounded-md px-2 text-xs font-medium tabular-nums text-zinc-500 transition-colors hover:bg-zinc-100"
+      class="flex h-9 min-w-9 items-center justify-center rounded-md px-2 text-xs font-medium text-zinc-500 tabular-nums transition-colors hover:bg-zinc-100"
       title="Reset view"
       aria-label="Reset view"
       @click="reset"

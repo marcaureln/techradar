@@ -1,9 +1,9 @@
 <script setup lang="ts">
-const { toasts, dismiss } = useToast()
+const { toasts, dismiss } = useToast();
 
 function runAction(id: number, action?: () => void) {
-  action?.()
-  dismiss(id)
+  action?.();
+  dismiss(id);
 }
 </script>
 

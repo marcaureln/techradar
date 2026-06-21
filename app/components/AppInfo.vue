@@ -1,26 +1,23 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { onClickOutside } from '@vueuse/core'
+import { ref } from 'vue';
+import { onClickOutside } from '@vueuse/core';
 
-const open = ref(false)
-const root = ref<HTMLElement | null>(null)
-onClickOutside(root, () => (open.value = false))
+const open = ref(false);
+const root = ref<HTMLElement | null>(null);
+onClickOutside(root, () => (open.value = false));
 
-const version = useRuntimeConfig().public.version
+const version = useRuntimeConfig().public.version;
 </script>
 
 <template>
-  <div ref="root" class="fixed bottom-4 right-4 z-40">
+  <div ref="root" class="fixed right-4 bottom-4 z-40">
     <Transition
       enter-active-class="transition duration-150 ease-out"
       enter-from-class="translate-y-1 opacity-0"
       leave-active-class="transition duration-100 ease-in"
       leave-to-class="translate-y-1 opacity-0"
     >
-      <div
-        v-if="open"
-        class="absolute bottom-11 right-0 w-60 rounded-lg border border-zinc-200 bg-white p-4 text-sm"
-      >
+      <div v-if="open" class="absolute right-0 bottom-11 w-60 rounded-lg border border-zinc-200 bg-white p-4 text-sm">
         <div class="flex items-baseline justify-between">
           <span class="font-medium text-zinc-900">Tech Radar</span>
           <span class="text-xs text-zinc-400">v{{ version }}</span>
@@ -32,7 +29,8 @@ const version = useRuntimeConfig().public.version
             target="_blank"
             rel="noopener noreferrer"
             class="font-medium text-zinc-900 underline decoration-zinc-300 underline-offset-2 transition-colors hover:decoration-zinc-900"
-          >Alex N'Guessan</a>.
+            >Alex N'Guessan</a
+          >.
         </p>
       </div>
     </Transition>

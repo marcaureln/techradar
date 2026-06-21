@@ -1,28 +1,28 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import { motion } from 'motion-v'
-import { QUADRANT_COLORS } from '#shared/lib/radar/constants'
-import type { BlipWithHistory } from '#shared/types'
+import { computed } from 'vue';
+import { motion } from 'motion-v';
+import { QUADRANT_COLORS } from '#shared/lib/radar/constants';
+import type { BlipWithHistory } from '#shared/types';
 
 const props = defineProps<{
-  x: number
-  y: number
-  blips: BlipWithHistory[]
-  scale?: number
-}>()
+  x: number;
+  y: number;
+  blips: BlipWithHistory[];
+  scale?: number;
+}>();
 
-const emit = defineEmits<{ expand: [] }>()
+const emit = defineEmits<{ expand: [] }>();
 
 const markerStyle = computed(() => ({
   transform: `scale(${1 / (props.scale || 1)})`,
   transformBox: 'view-box' as const,
   transformOrigin: `${props.x}px ${props.y}px`,
-}))
+}));
 
 const color = computed(() => {
-  const q = props.blips[0]?.quadrant
-  return props.blips.every((b) => b.quadrant === q) ? QUADRANT_COLORS[q] : '#71717a'
-})
+  const q = props.blips[0]?.quadrant;
+  return props.blips.every((b) => b.quadrant === q) ? QUADRANT_COLORS[q] : '#71717a';
+});
 </script>
 
 <template>

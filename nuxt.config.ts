@@ -1,28 +1,26 @@
-import { resolve } from 'node:path'
-import { createRequire } from 'node:module'
-import tailwindcss from '@tailwindcss/vite'
+import { resolve } from 'node:path';
+import { createRequire } from 'node:module';
+import tailwindcss from '@tailwindcss/vite';
 
-const pkg = createRequire(import.meta.url)('./package.json')
+const pkg = createRequire(import.meta.url)('./package.json');
 
 // Build a minimal Phosphor collection with only the icons the app uses, so the
 // server bundle ships those icons instead of the whole ~9k-icon set.
-const USED_ICONS = ['plus', 'minus', 'x', 'link', 'check', 'arrow-up', 'arrow-down', 'info', 'warning', 'gear-six']
-const phFull = createRequire(import.meta.url)('@iconify-json/ph/icons.json')
+const USED_ICONS = ['plus', 'minus', 'x', 'link', 'check', 'arrow-up', 'arrow-down', 'info', 'warning', 'gear-six'];
+const phFull = createRequire(import.meta.url)('@iconify-json/ph/icons.json');
 const phSubset = {
   prefix: phFull.prefix,
   width: phFull.width,
   height: phFull.height,
-  icons: Object.fromEntries(
-    USED_ICONS.filter((n) => phFull.icons[n]).map((n) => [n, phFull.icons[n]]),
-  ),
-}
+  icons: Object.fromEntries(USED_ICONS.filter((n) => phFull.icons[n]).map((n) => [n, phFull.icons[n]])),
+};
 
 export default defineNuxtConfig({
   future: {
     compatibilityVersion: 4,
   },
 
-  modules: ['@nuxt/fonts', '@nuxt/icon'],
+  modules: ['@nuxt/eslint', '@nuxt/fonts', '@nuxt/icon'],
 
   // Ship only the icons actually used instead of the whole Phosphor
   // collection. Keeps the bundle small and fully offline (server + client).
@@ -45,9 +43,7 @@ export default defineNuxtConfig({
 
   devtools: { enabled: true },
 
-  components: [
-    { path: '~/components', ignore: ['ui/**'] },
-  ],
+  components: [{ path: '~/components', ignore: ['ui/**'] }],
 
   alias: {
     '#shared': resolve(__dirname, 'shared'),
@@ -88,12 +84,8 @@ export default defineNuxtConfig({
   app: {
     head: {
       title: 'Tech Radar',
-      link: [
-        { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
-      ],
-      meta: [
-        { name: 'description', content: 'Track technology adoption across your organization' },
-      ],
+      link: [{ rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
+      meta: [{ name: 'description', content: 'Track technology adoption across your organization' }],
     },
   },
-})
+});

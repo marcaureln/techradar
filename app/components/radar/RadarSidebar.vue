@@ -1,28 +1,28 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import { QUADRANT_COLORS, RING_LABELS, RING_DESCRIPTIONS } from '#shared/lib/radar/constants'
-import { isDue } from '#shared/lib/radar/review'
-import type { BlipWithHistory, Ring } from '#shared/types'
+import { computed } from 'vue';
+import { QUADRANT_COLORS, RING_LABELS, RING_DESCRIPTIONS } from '#shared/lib/radar/constants';
+import { isDue } from '#shared/lib/radar/review';
+import type { BlipWithHistory, Ring } from '#shared/types';
 
 const props = defineProps<{
-  blips: BlipWithHistory[]
-  selectedId: string | null
-  loading?: boolean
-}>()
+  blips: BlipWithHistory[];
+  selectedId: string | null;
+  loading?: boolean;
+}>();
 
-const emit = defineEmits<{ select: [blip: BlipWithHistory] }>()
+const emit = defineEmits<{ select: [blip: BlipWithHistory] }>();
 
-const { hoveredId } = useRadarView()
+const { hoveredId } = useRadarView();
 
-const RING_ORDER: Ring[] = ['adopt', 'trial', 'assess', 'hold']
+const RING_ORDER: Ring[] = ['adopt', 'trial', 'assess', 'hold'];
 
 const groups = computed(() =>
   RING_ORDER.map((ring) => ({
     ring,
     label: RING_LABELS[ring],
     blips: props.blips.filter((b) => b.ring === ring).sort((a, b) => a.number - b.number),
-  })).filter((g) => g.blips.length > 0),
-)
+  })).filter((g) => g.blips.length > 0)
+);
 </script>
 
 <template>
@@ -34,17 +34,15 @@ const groups = computed(() =>
       </div>
     </div>
 
-    <div v-else-if="!blips.length" class="px-2 py-6 text-sm text-zinc-400">
-      No blips yet.
-    </div>
+    <div v-else-if="!blips.length" class="px-2 py-6 text-sm text-zinc-400">No blips yet.</div>
 
     <div v-else class="space-y-4">
       <div v-for="group in groups" :key="group.ring">
         <div class="group/ring relative mb-1 flex items-center gap-2 px-2">
-          <span class="text-xs font-medium uppercase tracking-wide text-zinc-400">{{ group.label }}</span>
+          <span class="text-xs font-medium tracking-wide text-zinc-400 uppercase">{{ group.label }}</span>
           <span class="text-xs text-zinc-300">{{ group.blips.length }}</span>
           <div
-            class="pointer-events-none absolute left-2 top-full z-50 mt-1 w-52 rounded-lg border border-zinc-200 bg-white p-3 text-xs leading-relaxed text-zinc-600 opacity-0 transition-opacity duration-150 group-hover/ring:opacity-100"
+            class="pointer-events-none absolute top-full left-2 z-50 mt-1 w-52 rounded-lg border border-zinc-200 bg-white p-3 text-xs leading-relaxed text-zinc-600 opacity-0 transition-opacity duration-150 group-hover/ring:opacity-100"
           >
             {{ RING_DESCRIPTIONS[group.ring] }}
           </div>

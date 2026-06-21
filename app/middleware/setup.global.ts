@@ -1,16 +1,16 @@
 export default defineNuxtRouteMiddleware(async (to) => {
-  if (to.path.startsWith('/setup')) return
+  if (to.path.startsWith('/setup')) return;
 
-  const verified = useState('setup-verified', () => false)
-  if (verified.value) return
+  const verified = useState('setup-verified', () => false);
+  if (verified.value) return;
 
   try {
-    const data = await $fetch<{ data: { setupDone: boolean } }>('/api/settings')
+    const data = await $fetch<{ data: { setupDone: boolean } }>('/api/settings');
     if (!data?.data?.setupDone) {
-      return navigateTo('/setup')
+      return navigateTo('/setup');
     }
-    verified.value = true
+    verified.value = true;
   } catch {
-    return navigateTo('/setup')
+    return navigateTo('/setup');
   }
-})
+});

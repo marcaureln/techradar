@@ -1,137 +1,141 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, watch, nextTick } from 'vue'
-import { AnimatePresence } from 'motion-v'
-import { computeBlipPositions } from '#shared/lib/radar/positions'
-import { QUADRANT_COLORS, QUADRANT_LABELS, QUADRANT_START, RING_OUTER, CX, CY, RMAX } from '#shared/lib/radar/constants'
-import { clusterBlips } from '#shared/lib/radar/cluster'
-import { blipDirection } from '#shared/lib/radar/direction'
-import type { BlipWithHistory, Quadrant } from '#shared/types'
+import { ref, computed, onMounted, watch, nextTick } from 'vue';
+import { AnimatePresence } from 'motion-v';
+import { computeBlipPositions } from '#shared/lib/radar/positions';
+import {
+  QUADRANT_COLORS,
+  QUADRANT_LABELS,
+  QUADRANT_START,
+  RING_OUTER,
+  CX,
+  CY,
+  RMAX,
+} from '#shared/lib/radar/constants';
+import { clusterBlips } from '#shared/lib/radar/cluster';
+import { blipDirection } from '#shared/lib/radar/direction';
+import type { BlipWithHistory, Quadrant } from '#shared/types';
 
-const CACHE_KEY = 'techradar:blip-positions'
+const CACHE_KEY = 'techradar:blip-positions';
 
 const props = defineProps<{
-  blips: BlipWithHistory[]
-}>()
+  blips: BlipWithHistory[];
+}>();
 
 const emit = defineEmits<{
-  select: [blip: BlipWithHistory]
-}>()
+  select: [blip: BlipWithHistory];
+}>();
 
-const { view, focused, hoveredId, animating, zoomAt, panBy, focusQuadrant } = useRadarView()
+const { view, focused, hoveredId, animating, zoomAt, panBy, focusQuadrant } = useRadarView();
 
 const filteredBlips = computed(() =>
-  focused.value ? props.blips.filter((b) => b.quadrant === focused.value) : props.blips,
-)
+  focused.value ? props.blips.filter((b) => b.quadrant === focused.value) : props.blips
+);
 
-const positions = computed(() => computeBlipPositions(filteredBlips.value))
+const positions = computed(() => computeBlipPositions(filteredBlips.value));
 
-const { useClusters, hideSidebar } = useRadarSettings()
+const { useClusters, hideSidebar } = useRadarSettings();
 const clusters = computed(() =>
   useClusters.value
     ? clusterBlips(filteredBlips.value, positions.value, view.value.scale)
     : filteredBlips.value.map((b) => {
-        const p = positions.value.get(b.id) ?? { x: CX, y: CY }
-        return { x: p.x, y: p.y, blips: [b] }
-      }),
-)
-const singles = computed(() => clusters.value.filter((c) => c.blips.length === 1))
-const groups = computed(() => clusters.value.filter((c) => c.blips.length > 1))
+        const p = positions.value.get(b.id) ?? { x: CX, y: CY };
+        return { x: p.x, y: p.y, blips: [b] };
+      })
+);
+const singles = computed(() => clusters.value.filter((c) => c.blips.length === 1));
+const groups = computed(() => clusters.value.filter((c) => c.blips.length > 1));
 
 const hoveredBlip = computed(() =>
-  hoveredId.value ? filteredBlips.value.find((b) => b.id === hoveredId.value) ?? null : null,
-)
-const hoveredPos = computed(() =>
-  hoveredId.value ? positions.value.get(hoveredId.value) ?? null : null,
-)
+  hoveredId.value ? (filteredBlips.value.find((b) => b.id === hoveredId.value) ?? null) : null
+);
+const hoveredPos = computed(() => (hoveredId.value ? (positions.value.get(hoveredId.value) ?? null) : null));
 
-const prevPositions = ref<Record<string, { x: number; y: number }>>({})
+const prevPositions = ref<Record<string, { x: number; y: number }>>({});
 
 onMounted(() => {
   try {
-    const cached = localStorage.getItem(CACHE_KEY)
-    if (cached) prevPositions.value = JSON.parse(cached)
+    const cached = localStorage.getItem(CACHE_KEY);
+    if (cached) prevPositions.value = JSON.parse(cached);
   } catch {}
-})
+});
 
 function persistPositions() {
-  const next: Record<string, { x: number; y: number }> = {}
+  const next: Record<string, { x: number; y: number }> = {};
   positions.value.forEach((pos, id) => {
-    next[id] = pos
-  })
+    next[id] = pos;
+  });
   try {
-    localStorage.setItem(CACHE_KEY, JSON.stringify(next))
+    localStorage.setItem(CACHE_KEY, JSON.stringify(next));
   } catch {}
 }
 
 watch(positions, () => {
-  nextTick(() => persistPositions())
-})
+  nextTick(() => persistPositions());
+});
 
-const svgEl = ref<SVGSVGElement | null>(null)
+const svgEl = ref<SVGSVGElement | null>(null);
 
 function toViewbox(clientX: number, clientY: number) {
-  const r = svgEl.value!.getBoundingClientRect()
-  return { x: (clientX - r.left) * (560 / r.width), y: (clientY - r.top) * (560 / r.height) }
+  const r = svgEl.value!.getBoundingClientRect();
+  return { x: (clientX - r.left) * (560 / r.width), y: (clientY - r.top) * (560 / r.height) };
 }
 
 function onWheel(e: WheelEvent) {
-  zoomAt(toViewbox(e.clientX, e.clientY), e.deltaY < 0 ? 1.12 : 1 / 1.12)
+  zoomAt(toViewbox(e.clientX, e.clientY), e.deltaY < 0 ? 1.12 : 1 / 1.12);
 }
 
-const dragging = ref(false)
-let moved = false
-let last = { x: 0, y: 0 }
+const dragging = ref(false);
+let moved = false;
+let last = { x: 0, y: 0 };
 
 function onPointerDown(e: PointerEvent) {
-  if (e.button !== 0) return
-  dragging.value = true
-  moved = false
-  last = { x: e.clientX, y: e.clientY }
+  if (e.button !== 0) return;
+  dragging.value = true;
+  moved = false;
+  last = { x: e.clientX, y: e.clientY };
 }
 function onPointerMove(e: PointerEvent) {
-  if (!dragging.value) return
-  const r = svgEl.value!.getBoundingClientRect()
-  const f = 560 / r.width
-  const dx = e.clientX - last.x
-  const dy = e.clientY - last.y
-  if (Math.abs(dx) + Math.abs(dy) > 2) moved = true
-  panBy(dx * f, dy * f)
-  last = { x: e.clientX, y: e.clientY }
+  if (!dragging.value) return;
+  const r = svgEl.value!.getBoundingClientRect();
+  const f = 560 / r.width;
+  const dx = e.clientX - last.x;
+  const dy = e.clientY - last.y;
+  if (Math.abs(dx) + Math.abs(dy) > 2) moved = true;
+  panBy(dx * f, dy * f);
+  last = { x: e.clientX, y: e.clientY };
 }
 function onPointerUp() {
-  dragging.value = false
+  dragging.value = false;
 }
 
-const transform = computed(
-  () => `translate(${view.value.tx}px, ${view.value.ty}px) scale(${view.value.scale})`,
-)
+const transform = computed(() => `translate(${view.value.tx}px, ${view.value.ty}px) scale(${view.value.scale})`);
 
 function handleBlipClick(blip: BlipWithHistory) {
-  if (moved) return
-  emit('select', blip)
+  if (moved) return;
+  emit('select', blip);
 }
 
 function quadrantArc(q: Quadrant): string {
-  const start = QUADRANT_START[q]
-  const r = RMAX
-  const startRad = ((start - 90) * Math.PI) / 180
-  const endRad = ((start + 90 - 90) * Math.PI) / 180
-  const x1 = CX + r * Math.cos(startRad)
-  const y1 = CY + r * Math.sin(startRad)
-  const x2 = CX + r * Math.cos(endRad)
-  const y2 = CY + r * Math.sin(endRad)
-  return `M ${CX} ${CY} L ${x1} ${y1} A ${r} ${r} 0 0 1 ${x2} ${y2} Z`
+  const start = QUADRANT_START[q];
+  const r = RMAX;
+  const startRad = ((start - 90) * Math.PI) / 180;
+  const endRad = ((start + 90 - 90) * Math.PI) / 180;
+  const x1 = CX + r * Math.cos(startRad);
+  const y1 = CY + r * Math.sin(startRad);
+  const x2 = CX + r * Math.cos(endRad);
+  const y2 = CY + r * Math.sin(endRad);
+  return `M ${CX} ${CY} L ${x1} ${y1} A ${r} ${r} 0 0 1 ${x2} ${y2} Z`;
 }
 
 function quadrantLabelPos(q: Quadrant): { x: number; y: number } {
-  const midAngle = QUADRANT_START[q] + 45
-  const r = RMAX + 30
-  const rad = ((midAngle - 90) * Math.PI) / 180
-  return { x: CX + r * Math.cos(rad), y: CY + r * Math.sin(rad) }
+  const midAngle = QUADRANT_START[q] + 45;
+  const r = RMAX + 30;
+  const rad = ((midAngle - 90) * Math.PI) / 180;
+  return { x: CX + r * Math.cos(rad), y: CY + r * Math.sin(rad) };
 }
 
-const ringLabels = ['Adopt', 'Trial', 'Assess', 'Hold']
-const quadrantKeys = Object.keys(QUADRANT_LABELS) as Quadrant[]
+const ringLabels = ['Adopt', 'Trial', 'Assess', 'Hold'];
+const quadrantKeys = Object.keys(QUADRANT_LABELS) as Quadrant[];
 </script>
 
 <template>
@@ -146,7 +150,11 @@ const quadrantKeys = Object.keys(QUADRANT_LABELS) as Quadrant[]
         viewBox="0 0 560 560"
         preserveAspectRatio="xMidYMid meet"
         class="h-full max-h-full w-full touch-none select-none"
-        :style="{ maxWidth: hideSidebar ? '820px' : '600px', cursor: dragging ? 'grabbing' : 'grab', transition: 'max-width 0.25s ease' }"
+        :style="{
+          maxWidth: hideSidebar ? '820px' : '600px',
+          cursor: dragging ? 'grabbing' : 'grab',
+          transition: 'max-width 0.25s ease',
+        }"
         @wheel.prevent="onWheel"
         @pointerdown="onPointerDown"
         @pointermove="onPointerMove"
@@ -179,7 +187,7 @@ const quadrantKeys = Object.keys(QUADRANT_LABELS) as Quadrant[]
             <path
               :d="quadrantArc(key)"
               :fill="QUADRANT_COLORS[key]"
-              :fill-opacity="!focused ? 0.12 : (focused === key ? 0.18 : 0.04)"
+              :fill-opacity="!focused ? 0.12 : focused === key ? 0.18 : 0.04"
               stroke="none"
               style="transition: fill-opacity 0.3s ease"
             />
@@ -272,7 +280,7 @@ const quadrantKeys = Object.keys(QUADRANT_LABELS) as Quadrant[]
         </g>
       </svg>
 
-      <div class="absolute bottom-3 right-3">
+      <div class="absolute right-3 bottom-3">
         <RadarZoomControls />
       </div>
     </div>

@@ -1,7 +1,3 @@
-<script setup lang="ts">
-import { AnimatePresence } from 'motion-v'
-</script>
-
 <template>
   <div class="relative flex min-h-screen items-center justify-center overflow-hidden bg-white">
     <div class="pointer-events-none absolute inset-0 opacity-[0.04]">
