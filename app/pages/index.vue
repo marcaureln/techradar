@@ -62,17 +62,7 @@ watch(
 </script>
 
 <template>
-  <div class="relative z-40 mx-auto flex h-full max-w-6xl flex-col px-4 py-4">
-    <div class="mb-3 flex shrink-0 items-center justify-end">
-      <button
-        class="inline-flex h-9 items-center gap-1.5 rounded-md bg-zinc-900 px-3.5 text-sm font-medium text-white transition-colors hover:bg-zinc-800"
-        @click="openAdd"
-      >
-        <Icon name="ph:plus" class="h-4 w-4" />
-        Add blip
-      </button>
-    </div>
-
+  <div class="relative z-40 mx-auto flex h-full max-w-6xl flex-col px-4 pb-4 pt-10">
     <div class="flex min-h-0 flex-1 gap-6">
       <RadarSidebar
         class="hidden md:block"
