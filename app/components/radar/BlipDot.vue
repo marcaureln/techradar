@@ -12,7 +12,17 @@ const props = defineProps<{
   prevY?: number
   isOverdue: boolean
   scale?: number
+  direction?: 'up' | 'down' | null
 }>()
+
+// Direction is a small semicircle hugging the dot: top = moved toward adopt,
+// bottom = moved toward hold. Drawn behind the dot so only a crescent shows.
+const DIR_R = 14
+const dirPath = computed(() => {
+  if (props.direction === 'up') return `M ${props.x - DIR_R} ${props.y} A ${DIR_R} ${DIR_R} 0 0 0 ${props.x + DIR_R} ${props.y} Z`
+  if (props.direction === 'down') return `M ${props.x - DIR_R} ${props.y} A ${DIR_R} ${DIR_R} 0 0 1 ${props.x + DIR_R} ${props.y} Z`
+  return null
+})
 
 const emit = defineEmits<{ click: []; hover: [boolean] }>()
 
@@ -51,6 +61,7 @@ const initial = computed(() => {
     @mouseleave="emit('hover', false)"
   >
     <g :style="markerStyle">
+      <path v-if="dirPath" :d="dirPath" fill="#18181b" />
       <motion.circle
         v-if="isOverdue"
         :cx="x"

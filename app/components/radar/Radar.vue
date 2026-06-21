@@ -3,6 +3,8 @@ import { ref, computed, onMounted, watch, nextTick } from 'vue'
 import { computeBlipPositions } from '#shared/lib/radar/positions'
 import { QUADRANT_COLORS, QUADRANT_LABELS, QUADRANT_START, RING_OUTER, CX, CY, RMAX } from '#shared/lib/radar/constants'
 import { isDue } from '#shared/lib/radar/review'
+import { clusterBlips } from '#shared/lib/radar/cluster'
+import { blipDirection } from '#shared/lib/radar/direction'
 import type { BlipWithHistory, Quadrant } from '#shared/types'
 
 const CACHE_KEY = 'techradar:blip-positions'
@@ -22,6 +24,9 @@ const filteredBlips = computed(() =>
 )
 
 const positions = computed(() => computeBlipPositions(filteredBlips.value))
+
+// Aggregate blips that overlap at the current zoom; clusters split as you zoom in.
+const clusters = computed(() => clusterBlips(filteredBlips.value, positions.value, view.value.scale))
 
 // The hovered blip's label is drawn in a separate top layer (below) so it is
 // never covered by another dot — without reordering/remounting the dots.
@@ -176,19 +181,29 @@ const quadrantKeys = Object.keys(QUADRANT_LABELS) as Quadrant[]
             />
           </template>
 
-          <RadarBlipDot
-            v-for="blip in filteredBlips"
-            :key="blip.id"
-            :blip="blip"
-            :x="positions.get(blip.id)?.x ?? CX"
-            :y="positions.get(blip.id)?.y ?? CY"
-            :prev-x="prevPositions[blip.id]?.x"
-            :prev-y="prevPositions[blip.id]?.y"
-            :is-overdue="isDue(blip)"
-            :scale="view.scale"
-            @click="handleBlipClick(blip)"
-            @hover="(v) => (hoveredId = v ? blip.id : null)"
-          />
+          <template v-for="cluster in clusters" :key="cluster.blips.map((b) => b.id).join(',')">
+            <RadarBlipDot
+              v-if="cluster.blips.length === 1"
+              :blip="cluster.blips[0]!"
+              :x="positions.get(cluster.blips[0]!.id)?.x ?? CX"
+              :y="positions.get(cluster.blips[0]!.id)?.y ?? CY"
+              :prev-x="prevPositions[cluster.blips[0]!.id]?.x"
+              :prev-y="prevPositions[cluster.blips[0]!.id]?.y"
+              :is-overdue="isDue(cluster.blips[0]!)"
+              :scale="view.scale"
+              :direction="blipDirection(cluster.blips[0]!)"
+              @click="handleBlipClick(cluster.blips[0]!)"
+              @hover="(v) => (hoveredId = v ? cluster.blips[0]!.id : null)"
+            />
+            <RadarCluster
+              v-else
+              :x="cluster.x"
+              :y="cluster.y"
+              :blips="cluster.blips"
+              :scale="view.scale"
+              @expand="zoomAt({ x: cluster.x, y: cluster.y }, 2.2)"
+            />
+          </template>
 
           <!-- Hover label: top layer, counter-scaled to stay constant size. -->
           <g

@@ -64,7 +64,7 @@ watch(
 </script>
 
 <template>
-  <div class="relative z-40 mx-auto flex h-full max-w-6xl flex-col px-4 pb-4 pt-10">
+  <div class="relative z-40 mx-auto flex h-full max-w-7xl flex-col px-4 pb-4 pt-10">
     <div class="flex min-h-0 flex-1 gap-6">
       <RadarSidebar
         class="hidden md:block"
@@ -77,6 +77,8 @@ watch(
         <RadarSkeleton v-if="isPending" />
         <Radar v-else class="h-full w-full" :blips="blips ?? []" @select="selectBlip" />
       </div>
+      <!-- Mirrors the sidebar so the radar stays centred while the sidebar sits left. -->
+      <div class="hidden w-56 shrink-0 md:block" aria-hidden="true" />
     </div>
   </div>
 

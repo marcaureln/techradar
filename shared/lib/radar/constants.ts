@@ -19,6 +19,13 @@ export const RING_LABELS: Record<string, string> = {
   hold: 'Hold',
 }
 
+export const RING_DESCRIPTIONS: Record<string, string> = {
+  adopt: 'Proven, safe defaults. Use them where they fit, and promote here cautiously once you truly understand it.',
+  trial: 'Worth using on real projects. It has shown real value with limits understood, so pursue it going forward.',
+  assess: 'Worth exploring to gauge impact. Invest a little effort like spikes or research to see if it matters to you.',
+  hold: 'Proceed with caution and do not start new work with it. It is fine to keep where it is already embedded.',
+}
+
 export const QUADRANT_START: Record<string, number> = {
   techniques: 0,
   tools: 270,

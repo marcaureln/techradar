@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { QUADRANT_COLORS, RING_LABELS } from '#shared/lib/radar/constants'
+import { QUADRANT_COLORS, RING_LABELS, RING_DESCRIPTIONS } from '#shared/lib/radar/constants'
+import { isDue } from '#shared/lib/radar/review'
 import type { BlipWithHistory, Ring } from '#shared/types'
 
 const props = defineProps<{
@@ -25,7 +26,7 @@ const groups = computed(() =>
 </script>
 
 <template>
-  <aside class="h-full w-60 shrink-0 overflow-y-auto pr-1">
+  <aside class="h-full w-56 shrink-0 overflow-y-auto pr-1">
     <div v-if="loading" class="space-y-4">
       <div v-for="g in 3" :key="g" class="space-y-2">
         <Skeleton class="h-3 w-16" />
@@ -39,9 +40,15 @@ const groups = computed(() =>
 
     <div v-else class="space-y-4">
       <div v-for="group in groups" :key="group.ring">
-        <div class="mb-1 flex items-center gap-2 px-2">
+        <div class="group/ring relative mb-1 flex items-center gap-2 px-2">
           <span class="text-xs font-medium uppercase tracking-wide text-zinc-400">{{ group.label }}</span>
           <span class="text-xs text-zinc-300">{{ group.blips.length }}</span>
+          <!-- Hover the ring name to read what the ring means. -->
+          <div
+            class="pointer-events-none absolute left-2 top-full z-50 mt-1 w-52 rounded-lg border border-zinc-200 bg-white p-3 text-xs leading-relaxed text-zinc-600 opacity-0 transition-opacity duration-150 group-hover/ring:opacity-100"
+          >
+            {{ RING_DESCRIPTIONS[group.ring] }}
+          </div>
         </div>
         <ul>
           <li v-for="blip in group.blips" :key="blip.id">
@@ -55,6 +62,14 @@ const groups = computed(() =>
               @mouseenter="hoveredId = blip.id"
               @mouseleave="hoveredId = null"
             >
+              <span class="flex h-3.5 w-3.5 shrink-0 items-center justify-center">
+                <Icon
+                  v-if="isDue(blip)"
+                  name="ph:warning"
+                  class="h-3.5 w-3.5 text-red-500"
+                  title="Needs review"
+                />
+              </span>
               <span
                 class="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-medium text-white"
                 :style="{ backgroundColor: QUADRANT_COLORS[blip.quadrant] }"
