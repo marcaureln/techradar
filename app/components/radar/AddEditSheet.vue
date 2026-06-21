@@ -95,6 +95,10 @@ const ringOptions = (Object.keys(RING_LABELS) as Ring[]).map((r) => ({
         <input
           ref="nameInput"
           :value="values.name"
+          autocomplete="off"
+          data-1p-ignore
+          data-lpignore="true"
+          data-form-type="other"
           class="w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-zinc-400 focus:ring-1 focus:ring-zinc-400 focus:outline-none"
           placeholder="Technology name"
           @input="setFieldValue('name', ($event.target as HTMLInputElement).value)"
