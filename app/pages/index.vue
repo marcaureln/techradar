@@ -11,6 +11,7 @@ const route = useRoute()
 const router = useRouter()
 
 const { data: blips, isPending } = useBlips()
+const { hideSidebar } = useRadarSettings()
 
 // Selection lives in the URL (?blip=<number>) — shareable, resumable, no UID.
 const selectedBlip = computed<BlipWithHistory | null>(() => {
@@ -66,19 +67,29 @@ watch(
 <template>
   <div class="relative z-40 mx-auto flex h-full max-w-7xl flex-col px-4 pb-4 pt-10">
     <div class="flex min-h-0 flex-1 gap-6">
-      <RadarSidebar
-        class="hidden md:block"
-        :blips="blips ?? []"
-        :selected-id="selectedId"
-        :loading="isPending"
-        @select="selectBlip"
-      />
+      <!-- Sidebar + mirror spacer collapse their width in sync with the radar
+           growing, so hiding the sidebar reads as one smooth motion. -->
+      <div
+        class="hidden h-full shrink-0 overflow-hidden md:block"
+        :style="{ width: hideSidebar ? '0px' : '14rem', transition: 'width 0.25s ease' }"
+      >
+        <RadarSidebar
+          class="w-56"
+          :blips="blips ?? []"
+          :selected-id="selectedId"
+          :loading="isPending"
+          @select="selectBlip"
+        />
+      </div>
       <div class="flex min-w-0 flex-1 items-center justify-center">
         <RadarSkeleton v-if="isPending" />
         <Radar v-else class="h-full w-full" :blips="blips ?? []" @select="selectBlip" />
       </div>
-      <!-- Mirrors the sidebar so the radar stays centred while the sidebar sits left. -->
-      <div class="hidden w-56 shrink-0 md:block" aria-hidden="true" />
+      <div
+        class="hidden h-full shrink-0 md:block"
+        :style="{ width: hideSidebar ? '0px' : '14rem', transition: 'width 0.25s ease' }"
+        aria-hidden="true"
+      />
     </div>
   </div>
 

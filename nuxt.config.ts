@@ -6,7 +6,7 @@ const pkg = createRequire(import.meta.url)('./package.json')
 
 // Build a minimal Phosphor collection with only the icons the app uses, so the
 // server bundle ships those icons instead of the whole ~9k-icon set.
-const USED_ICONS = ['plus', 'minus', 'x', 'link', 'check', 'arrow-up', 'arrow-down', 'info', 'warning']
+const USED_ICONS = ['plus', 'minus', 'x', 'link', 'check', 'arrow-up', 'arrow-down', 'info', 'warning', 'gear-six']
 const phFull = createRequire(import.meta.url)('@iconify-json/ph/icons.json')
 const phSubset = {
   prefix: phFull.prefix,
@@ -66,7 +66,12 @@ export default defineNuxtConfig({
         '@prisma/nuxt > @prisma/client', // CJS
         '@tanstack/vue-query',
         '@tanstack/vue-table',
+        '@vee-validate/zod',
         '@vueuse/core',
+        'motion-v',
+        'reka-ui',
+        'vee-validate',
+        'zod',
       ],
     },
     server: {

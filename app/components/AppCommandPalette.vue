@@ -25,8 +25,6 @@ const commandItems = computed<Item[]>(() => [
   { id: 'search', label: 'Search blips…', hint: '/', run: () => enterBlipMode() },
   { id: 'add', label: 'Add blip', hint: 'Create', run: () => navigateTo('/?add=1') },
   { id: 'radar', label: 'Go to radar', hint: 'Navigate', run: () => navigateTo('/') },
-  { id: 'review', label: 'Go to review', hint: 'Navigate', run: () => navigateTo('/review') },
-  { id: 'archived', label: 'View archived', hint: 'Navigate', run: () => navigateTo('/review?archived=true') },
   ...quadrantKeys.map((q) => ({
     id: `focus-${q}`,
     label: `Focus ${QUADRANT_LABELS[q]}`,

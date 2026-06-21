@@ -57,6 +57,7 @@ const initial = computed(() => {
     tabindex="-1"
     :initial="initial"
     :animate="{ x: 0, y: 0, scale: 1, opacity: 1 }"
+    :exit="{ scale: 0, opacity: 0 }"
     :transition="isNew
       ? { type: 'spring', stiffness: 200, damping: 20 }
       : { type: 'spring', stiffness: 80, damping: 18 }"

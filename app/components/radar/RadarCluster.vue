@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { motion } from 'motion-v'
 import { QUADRANT_COLORS } from '#shared/lib/radar/constants'
 import type { BlipWithHistory } from '#shared/types'
 
@@ -27,9 +28,13 @@ const color = computed(() => {
 </script>
 
 <template>
-  <g
+  <motion.g
     :style="{ transformOrigin: `${x}px ${y}px`, cursor: 'pointer', outline: 'none' }"
     tabindex="-1"
+    :initial="{ scale: 0.4, opacity: 0 }"
+    :animate="{ scale: 1, opacity: 1 }"
+    :exit="{ scale: 0.4, opacity: 0 }"
+    :transition="{ duration: 0.18 }"
     @click="emit('expand')"
   >
     <g :style="markerStyle">
@@ -48,5 +53,5 @@ const color = computed(() => {
         {{ blips.length }}
       </text>
     </g>
-  </g>
+  </motion.g>
 </template>

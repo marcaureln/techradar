@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch, nextTick } from 'vue'
+import { AnimatePresence } from 'motion-v'
 import { computeBlipPositions } from '#shared/lib/radar/positions'
 import { QUADRANT_COLORS, QUADRANT_LABELS, QUADRANT_START, RING_OUTER, CX, CY, RMAX } from '#shared/lib/radar/constants'
 import { clusterBlips } from '#shared/lib/radar/cluster'
@@ -25,7 +26,18 @@ const filteredBlips = computed(() =>
 const positions = computed(() => computeBlipPositions(filteredBlips.value))
 
 // Aggregate blips that overlap at the current zoom; clusters split as you zoom in.
-const clusters = computed(() => clusterBlips(filteredBlips.value, positions.value, view.value.scale))
+// When clustering is turned off, every blip renders as its own dot.
+const { useClusters, hideSidebar } = useRadarSettings()
+const clusters = computed(() =>
+  useClusters.value
+    ? clusterBlips(filteredBlips.value, positions.value, view.value.scale)
+    : filteredBlips.value.map((b) => {
+        const p = positions.value.get(b.id) ?? { x: CX, y: CY }
+        return { x: p.x, y: p.y, blips: [b] }
+      }),
+)
+const singles = computed(() => clusters.value.filter((c) => c.blips.length === 1))
+const groups = computed(() => clusters.value.filter((c) => c.blips.length > 1))
 
 // The hovered blip's label is drawn in a separate top layer (below) so it is
 // never covered by another dot — without reordering/remounting the dots.
@@ -141,7 +153,7 @@ const quadrantKeys = Object.keys(QUADRANT_LABELS) as Quadrant[]
         viewBox="0 0 560 560"
         preserveAspectRatio="xMidYMid meet"
         class="h-full max-h-full w-full touch-none select-none"
-        :style="{ maxWidth: '600px', cursor: dragging ? 'grabbing' : 'grab' }"
+        :style="{ maxWidth: hideSidebar ? '820px' : '600px', cursor: dragging ? 'grabbing' : 'grab', transition: 'max-width 0.25s ease' }"
         @wheel.prevent="onWheel"
         @pointerdown="onPointerDown"
         @pointermove="onPointerMove"
@@ -180,28 +192,30 @@ const quadrantKeys = Object.keys(QUADRANT_LABELS) as Quadrant[]
             />
           </template>
 
-          <template v-for="cluster in clusters" :key="cluster.blips.map((b) => b.id).join(',')">
+          <AnimatePresence>
             <RadarBlipDot
-              v-if="cluster.blips.length === 1"
-              :blip="cluster.blips[0]!"
-              :x="positions.get(cluster.blips[0]!.id)?.x ?? CX"
-              :y="positions.get(cluster.blips[0]!.id)?.y ?? CY"
-              :prev-x="prevPositions[cluster.blips[0]!.id]?.x"
-              :prev-y="prevPositions[cluster.blips[0]!.id]?.y"
+              v-for="c in singles"
+              :key="c.blips[0]!.id"
+              :blip="c.blips[0]!"
+              :x="positions.get(c.blips[0]!.id)?.x ?? CX"
+              :y="positions.get(c.blips[0]!.id)?.y ?? CY"
+              :prev-x="prevPositions[c.blips[0]!.id]?.x"
+              :prev-y="prevPositions[c.blips[0]!.id]?.y"
               :scale="view.scale"
-              :direction="blipDirection(cluster.blips[0]!)"
-              @click="handleBlipClick(cluster.blips[0]!)"
-              @hover="(v) => (hoveredId = v ? cluster.blips[0]!.id : null)"
+              :direction="blipDirection(c.blips[0]!)"
+              @click="handleBlipClick(c.blips[0]!)"
+              @hover="(v) => (hoveredId = v ? c.blips[0]!.id : null)"
             />
             <RadarCluster
-              v-else
-              :x="cluster.x"
-              :y="cluster.y"
-              :blips="cluster.blips"
+              v-for="c in groups"
+              :key="c.blips.map((b) => b.id).join(',')"
+              :x="c.x"
+              :y="c.y"
+              :blips="c.blips"
               :scale="view.scale"
-              @expand="zoomAt({ x: cluster.x, y: cluster.y }, 2.2)"
+              @expand="zoomAt({ x: c.x, y: c.y }, 2.2)"
             />
-          </template>
+          </AnimatePresence>
 
           <!-- Hover label: top layer, counter-scaled to stay constant size. -->
           <g
