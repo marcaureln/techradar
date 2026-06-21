@@ -82,7 +82,7 @@ watch(
         @select="selectBlip"
       />
       <div class="flex min-w-0 flex-1 items-center justify-center">
-        <Skeleton v-if="isPending" class="aspect-square w-full max-w-[560px] rounded-full" />
+        <RadarSkeleton v-if="isPending" />
         <Radar v-else class="h-full w-full" :blips="blips ?? []" @select="selectBlip" />
       </div>
     </div>
