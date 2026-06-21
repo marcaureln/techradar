@@ -77,12 +77,12 @@ const ringOptions = (Object.keys(RING_LABELS) as Ring[]).map((r) => ({
     @keydown.meta.enter.prevent="onSubmit"
     @keydown.ctrl.enter.prevent="onSubmit"
   >
-    <div class="flex items-center justify-between border-b border-zinc-200 px-6 py-4">
+    <div class="flex items-center justify-between border-b border-zinc-200 px-6 py-3">
       <h2 class="text-lg font-medium text-zinc-900">
         {{ isEdit ? 'Edit blip' : 'Add blip' }}
       </h2>
       <button
-        class="rounded-md p-1 text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-600"
+        class="flex h-9 w-9 items-center justify-center rounded-md text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-600"
         @click="emit('close')"
       >
         <Icon name="ph:x" class="h-5 w-5" />
