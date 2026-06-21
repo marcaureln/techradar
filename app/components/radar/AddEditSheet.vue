@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted, nextTick } from 'vue';
 import { useForm } from 'vee-validate';
 import { toTypedSchema } from '@vee-validate/zod';
 import { createBlipSchema, updateBlipSchema } from '#shared/validations/blip';
@@ -41,6 +41,9 @@ const updateBlip = useUpdateBlip();
 
 const loading = ref(false);
 
+const nameInput = ref<HTMLInputElement | null>(null);
+onMounted(() => nextTick(() => nameInput.value?.focus()));
+
 const onSubmit = handleSubmit(async (values) => {
   loading.value = true;
   try {
@@ -68,7 +71,12 @@ const ringOptions = (Object.keys(RING_LABELS) as Ring[]).map((r) => ({
 </script>
 
 <template>
-  <div class="flex h-full flex-col">
+  <div
+    class="flex h-full flex-col"
+    @keydown.escape="emit('close')"
+    @keydown.meta.enter.prevent="onSubmit"
+    @keydown.ctrl.enter.prevent="onSubmit"
+  >
     <div class="flex items-center justify-between border-b border-zinc-200 px-6 py-4">
       <h2 class="text-lg font-medium text-zinc-900">
         {{ isEdit ? 'Edit blip' : 'Add blip' }}
@@ -85,6 +93,7 @@ const ringOptions = (Object.keys(RING_LABELS) as Ring[]).map((r) => ({
       <div>
         <label class="mb-1.5 block text-sm font-medium text-zinc-700">Name</label>
         <input
+          ref="nameInput"
           :value="values.name"
           class="w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-zinc-400 focus:ring-1 focus:ring-zinc-400 focus:outline-none"
           placeholder="Technology name"
