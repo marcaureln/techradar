@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query';
-import type { Settings } from '#shared/types';
+import type { Settings, SettingsInput } from '#shared/types';
 
 const KEY = ['settings'] as const;
 
@@ -13,7 +13,7 @@ export function useSettings() {
 export function useUpdateSettings() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (input: { setupDone?: boolean }) =>
+    mutationFn: (input: SettingsInput) =>
       $fetch<{ data: Settings }>('/api/settings', { method: 'PATCH', body: input }).then((r) => r.data),
     onMutate: async (input) => {
       await qc.cancelQueries({ queryKey: KEY });

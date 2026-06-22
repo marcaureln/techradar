@@ -33,6 +33,8 @@ export interface BlipWithHistory extends Blip {
 export interface Settings {
   id: string;
   setupDone: boolean;
+  name: string | null;
+  description: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -46,4 +48,4 @@ export type CreateBlipInput = {
   lastEvaluatedAt?: string;
 };
 export type UpdateBlipInput = Partial<CreateBlipInput> & { id?: string };
-export type SettingsInput = { setupDone?: boolean };
+export type SettingsInput = { setupDone?: boolean; name?: string; description?: string };
