@@ -12,8 +12,8 @@ export function clusterBlips<T extends { id: string }>(
   scale: number
 ): BlipCluster<T>[] {
   const threshold = MERGE_DIST / Math.max(scale, 0.0001);
-  const t2 = threshold * threshold;
-  const clusters: { x: number; y: number; sx: number; sy: number; blips: T[] }[] = [];
+  const thresholdSq = threshold * threshold;
+  const clusters: { x: number; y: number; sumX: number; sumY: number; blips: T[] }[] = [];
 
   for (const blip of blips) {
     const p = positions.get(blip.id);
@@ -22,17 +22,17 @@ export function clusterBlips<T extends { id: string }>(
     for (const c of clusters) {
       const dx = c.x - p.x;
       const dy = c.y - p.y;
-      if (dx * dx + dy * dy <= t2) {
+      if (dx * dx + dy * dy <= thresholdSq) {
         c.blips.push(blip);
-        c.sx += p.x;
-        c.sy += p.y;
-        c.x = c.sx / c.blips.length;
-        c.y = c.sy / c.blips.length;
+        c.sumX += p.x;
+        c.sumY += p.y;
+        c.x = c.sumX / c.blips.length;
+        c.y = c.sumY / c.blips.length;
         merged = true;
         break;
       }
     }
-    if (!merged) clusters.push({ x: p.x, y: p.y, sx: p.x, sy: p.y, blips: [blip] });
+    if (!merged) clusters.push({ x: p.x, y: p.y, sumX: p.x, sumY: p.y, blips: [blip] });
   }
 
   return clusters.map((c) => ({ x: c.x, y: c.y, blips: c.blips }));

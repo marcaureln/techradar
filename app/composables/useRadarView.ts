@@ -3,11 +3,11 @@ import { useStorage } from '@vueuse/core';
 import type { Quadrant } from '#shared/types';
 
 const FOCUS_SCALE = 1.85;
-const FOCUS_POINT: Record<Quadrant, { cx: number; cy: number }> = {
-  techniques: { cx: 380, cy: 180 }, // NE
-  languages: { cx: 380, cy: 380 }, // SE
-  platforms: { cx: 180, cy: 380 }, // SW
-  tools: { cx: 180, cy: 180 }, // NW
+const FOCUS_CENTERS: Record<Quadrant, { x: number; y: number }> = {
+  techniques: { x: 380, y: 180 }, // NE
+  languages: { x: 380, y: 380 }, // SE
+  platforms: { x: 180, y: 380 }, // SW
+  tools: { x: 180, y: 180 }, // NW
 };
 const MIN_SCALE = 0.8;
 const MAX_SCALE = 6;
@@ -58,8 +58,8 @@ function panBy(dx: number, dy: number) {
 function focusQuadrant(q: Quadrant | null) {
   if (!q) return reset();
   focused.value = q;
-  const { cx, cy } = FOCUS_POINT[q];
-  commit({ scale: FOCUS_SCALE, tx: CENTER - FOCUS_SCALE * cx, ty: CENTER - FOCUS_SCALE * cy }, true);
+  const { x, y } = FOCUS_CENTERS[q];
+  commit({ scale: FOCUS_SCALE, tx: CENTER - FOCUS_SCALE * x, ty: CENTER - FOCUS_SCALE * y }, true);
 }
 
 function reset() {
