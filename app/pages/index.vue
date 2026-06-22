@@ -100,7 +100,7 @@ watch(
 
   <ClientOnly>
     <AnimatePresence>
-      <RadarDetailPanel
+      <LazyRadarDetailPanel
         v-if="selectedBlip"
         ref="detailPanel"
         :blip="selectedBlip"
@@ -128,7 +128,7 @@ watch(
         :transition="{ type: 'spring', stiffness: 300, damping: 30 }"
         class="fixed top-0 right-0 z-50 h-full w-full max-w-md bg-white"
       >
-        <RadarAddEditSheet :blip="editingBlip" @close="closeSheet" />
+        <LazyRadarAddEditSheet :blip="editingBlip" @close="closeSheet" />
       </motion.aside>
     </AnimatePresence>
   </ClientOnly>
