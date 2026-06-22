@@ -1,7 +1,7 @@
 import type { Blip } from '../../types/index';
+import { MS_PER_DAY } from './constants';
 
 const REVIEW_DAYS = 90;
-const MS_PER_DAY = 86_400_000;
 
 export function isDue(blip: Pick<Blip, 'lastEvaluatedAt'>): boolean {
   const elapsed = Date.now() - new Date(blip.lastEvaluatedAt).getTime();

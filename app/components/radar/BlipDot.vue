@@ -27,11 +27,7 @@ const dirTransform = computed(() => {
 
 const emit = defineEmits<{ click: []; hover: [boolean] }>();
 
-const markerStyle = computed(() => ({
-  transform: `scale(${1 / (props.scale || 1)})`,
-  transformBox: 'view-box' as const,
-  transformOrigin: `${props.x}px ${props.y}px`,
-}));
+const markerStyle = useMarkerStyle(props);
 
 const isNew = computed(() => props.prevX === undefined);
 const hasMoved = computed(() => !isNew.value && (props.prevX !== props.x || props.prevY !== props.y));

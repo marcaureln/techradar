@@ -13,11 +13,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{ expand: [] }>();
 
-const markerStyle = computed(() => ({
-  transform: `scale(${1 / (props.scale || 1)})`,
-  transformBox: 'view-box' as const,
-  transformOrigin: `${props.x}px ${props.y}px`,
-}));
+const markerStyle = useMarkerStyle(props);
 
 const color = computed(() => {
   const q = props.blips[0]?.quadrant;

@@ -1,13 +1,8 @@
 import { updateBlipSchema } from '#shared/validations/blip';
 
 export default defineEventHandler(async (event) => {
-  const id = getRouterParam(event, 'id');
-  if (!id) fail('Missing id');
-
+  const { id, existing } = await requireBlip(event);
   const data = await validateBody(event, updateBlipSchema);
-
-  const existing = await prisma.blip.findUnique({ where: { id } });
-  if (!existing) fail('Blip not found', 404);
 
   const ringChanged = data.ring !== undefined && data.ring !== existing.ring;
 
@@ -29,7 +24,7 @@ export default defineEventHandler(async (event) => {
           }
         : {}),
     },
-    include: { history: { orderBy: { changedAt: 'desc' } } },
+    include: withHistory,
   });
 
   return ok(blip);

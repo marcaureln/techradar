@@ -1,4 +1,4 @@
-import { RING_INDEX } from './constants';
+import { RING_INDEX, MS_PER_DAY } from './constants';
 import type { BlipWithHistory } from '../../types/index';
 
 export type BlipDirection = 'up' | 'down' | null;
@@ -18,5 +18,5 @@ const NEW_DAYS = 30;
 // A blip is "new" when it was added recently and has never moved rings.
 export function isNewBlip(blip: Pick<BlipWithHistory, 'history' | 'createdAt'>): boolean {
   if (blip.history?.length) return false;
-  return Date.now() - new Date(blip.createdAt).getTime() < NEW_DAYS * 86_400_000;
+  return Date.now() - new Date(blip.createdAt).getTime() < NEW_DAYS * MS_PER_DAY;
 }
