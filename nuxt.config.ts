@@ -83,9 +83,9 @@ export default defineNuxtConfig({
 
   app: {
     head: {
+      htmlAttrs: { lang: 'en' },
       title: 'Tech Radar',
       link: [{ rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
-      meta: [{ name: 'description', content: 'Track technology adoption across your organization' }],
     },
   },
 });
