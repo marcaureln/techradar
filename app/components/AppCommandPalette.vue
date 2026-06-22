@@ -16,13 +16,22 @@ interface Item {
   id: string;
   label: string;
   hint?: string;
-  run: () => void;
+  // Return true to keep the palette open (e.g. switching into blip search).
+  run: () => unknown;
 }
 
 const quadrantKeys = Object.keys(QUADRANT_LABELS) as Quadrant[];
 
 const commandItems = computed<Item[]>(() => [
-  { id: 'search', label: 'Search blips…', hint: '/', run: () => enterBlipMode() },
+  {
+    id: 'search',
+    label: 'Search blips…',
+    hint: '/',
+    run: () => {
+      enterBlipMode();
+      return true;
+    },
+  },
   { id: 'add', label: 'Add blip', hint: 'Create', run: () => navigateTo('/?add=1') },
   { id: 'radar', label: 'Go to radar', hint: 'Navigate', run: () => navigateTo('/') },
   ...quadrantKeys.map((q) => ({
@@ -83,7 +92,7 @@ watch(open, (v) => {
 function runActive() {
   const item = items.value[activeIndex.value];
   if (!item) return;
-  item.run();
+  if (item.run() === true) return;
   hide();
 }
 
