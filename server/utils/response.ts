@@ -1,5 +1,5 @@
 export const ok = <T>(data: T) => ({ data });
 
-export const fail = (error: string, status = 400) => {
+export function fail(error: string, status = 400): never {
   throw createError({ statusCode: status, message: error });
-};
+}

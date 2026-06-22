@@ -57,7 +57,9 @@ onMounted(() => {
   try {
     const cached = localStorage.getItem(CACHE_KEY);
     if (cached) prevPositions.value = JSON.parse(cached);
-  } catch {}
+  } catch {
+    // position cache is best-effort: ignore unavailable/corrupt localStorage
+  }
 });
 
 function persistPositions() {
@@ -67,7 +69,9 @@ function persistPositions() {
   });
   try {
     localStorage.setItem(CACHE_KEY, JSON.stringify(next));
-  } catch {}
+  } catch {
+    // best-effort write: ignore quota / unavailable localStorage
+  }
 }
 
 watch(positions, () => {

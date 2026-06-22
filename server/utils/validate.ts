@@ -6,6 +6,6 @@ import { fail } from './response';
 export async function validateBody<T>(event: H3Event, schema: ZodSchema<T>): Promise<T> {
   const body = await readBody(event);
   const result = schema.safeParse(body);
-  if (!result.success) fail(result.error.message);
-  return result.data!;
+  if (!result.success) fail(result.error.issues.map((i) => i.message).join(', '));
+  return result.data;
 }

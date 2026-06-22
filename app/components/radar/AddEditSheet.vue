@@ -53,6 +53,8 @@ const onSubmit = handleSubmit(async (values) => {
       await createBlip.mutateAsync(values as CreateBlipInput);
     }
     emit('close');
+  } catch {
+    // the mutation surfaces the error via a toast; keep the sheet open
   } finally {
     loading.value = false;
   }
