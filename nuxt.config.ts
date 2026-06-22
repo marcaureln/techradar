@@ -20,7 +20,19 @@ export default defineNuxtConfig({
     compatibilityVersion: 4,
   },
 
-  modules: ['@nuxt/eslint', '@nuxt/fonts', '@nuxt/icon'],
+  modules: ['@nuxt/eslint', '@nuxt/fonts', '@nuxt/icon', '@nuxtjs/robots', '@nuxtjs/sitemap', 'nuxt-schema-org'],
+
+  // Self-hosted: the public URL varies per operator. Set NUXT_SITE_URL to get
+  // absolute sitemap/canonical URLs; otherwise it is inferred from the request.
+  site: {
+    name: 'Tech Radar',
+    url: process.env.NUXT_SITE_URL,
+  },
+
+  // Onboarding is internal — keep it out of search indexes and the sitemap.
+  routeRules: {
+    '/setup': { robots: false },
+  },
 
   // Ship only the icons actually used instead of the whole Phosphor
   // collection. Keeps the bundle small and fully offline (server + client).

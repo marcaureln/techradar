@@ -9,7 +9,6 @@ const { data: settings } = await useFetch('/api/settings', {
 
 const url = useRequestURL();
 const siteUrl = `${url.origin}/`;
-const ogImage = `${url.origin}/techradar-logo.svg`;
 
 const DEFAULT_DESCRIPTION =
   'A self-hosted tech radar to track technology adoption across techniques, tools, platforms, and languages.';
@@ -28,12 +27,13 @@ useSeoMeta({
   ogTitle: title,
   ogDescription: description,
   ogUrl: siteUrl,
-  ogImage,
+  ogLocale: 'en_US',
   twitterCard: 'summary',
   twitterTitle: title,
   twitterDescription: description,
-  twitterImage: ogImage,
 });
+
+useSchemaOrg([defineWebSite({ name: title.value, description: description.value }), defineWebPage()]);
 </script>
 
 <template>
