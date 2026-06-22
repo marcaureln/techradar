@@ -19,7 +19,7 @@ const markReviewed = useMarkReviewed();
 const archiveBlip = useArchiveBlip();
 const restoreBlip = useRestoreBlip();
 const { show } = useToast();
-const { copy } = useClipboard();
+const { copy } = useClipboard({ legacy: true });
 
 const showNotes = ref(false);
 const copied = ref(false);
