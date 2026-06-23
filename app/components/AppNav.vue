@@ -1,5 +1,12 @@
 <script setup lang="ts">
 const { show } = useCommandPalette();
+const { canEdit, secure, user, refresh } = useAuth();
+
+async function signOut() {
+  await $fetch('/api/auth/logout', { method: 'POST' });
+  await refresh();
+  await navigateTo('/');
+}
 </script>
 
 <template>
@@ -16,13 +23,35 @@ const { show } = useCommandPalette();
       >
         <span class="text-sm">⌘</span>K
       </button>
+
       <button
+        v-if="canEdit"
         class="inline-flex h-9 items-center gap-1.5 rounded-md bg-zinc-900 px-3.5 text-sm font-medium text-white transition-colors hover:bg-zinc-800"
         @click="navigateTo('/?add=1')"
       >
         <Icon name="ph:plus" class="h-4 w-4" />
         Add blip
       </button>
+
+      <a
+        v-else-if="secure && !user"
+        href="/auth"
+        class="inline-flex h-9 items-center gap-1.5 rounded-md bg-zinc-900 px-3.5 text-sm font-medium text-white transition-colors hover:bg-zinc-800"
+      >
+        <Icon name="ph:sign-in" class="h-4 w-4" />
+        Sign in
+      </a>
+
+      <button
+        v-if="secure && user"
+        class="flex h-9 items-center gap-1.5 rounded-md border border-zinc-200 px-2.5 text-xs font-medium text-zinc-500 transition-colors hover:text-zinc-900"
+        :title="`Signed in as ${user.email}${canEdit ? '' : ' (read-only)'} — sign out`"
+        @click="signOut"
+      >
+        <Icon name="ph:sign-out" class="h-4 w-4" />
+        Sign out
+      </button>
+
       <AppSettingsMenu />
     </div>
   </nav>

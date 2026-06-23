@@ -13,6 +13,7 @@ const router = useRouter();
 
 const { data: blips, isPending } = useBlips();
 const { hideSidebar } = useRadarSettings();
+const { canEdit } = useAuth();
 
 const selectedBlip = computed<BlipWithHistory | null>(() => {
   const n = Number(route.query.blip);
@@ -42,11 +43,13 @@ const showAddSheet = ref(false);
 const editingBlip = ref<BlipWithHistory | null>(null);
 
 function openAdd() {
+  if (!canEdit.value) return;
   if (selectedBlip.value) clearSelection(); // close the detail panel first
   editingBlip.value = null;
   showAddSheet.value = true;
 }
 function openEdit(blip: BlipWithHistory) {
+  if (!canEdit.value) return;
   clearSelection();
   editingBlip.value = blip;
   showAddSheet.value = true;

@@ -1,8 +1,21 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { onClickOutside } from '@vueuse/core';
 
 const { hideSidebar, useClusters, hideLegend } = useRadarSettings();
+const { secure, canEdit, mcpEnabled, refresh } = useAuth();
+const updateSettings = useUpdateSettings();
+
+const mcpLocked = computed(() => !(secure.value && canEdit.value));
+const mcpHint = computed(() =>
+  mcpLocked.value
+    ? 'Read-only MCP endpoint (/mcp). Control it with the MCP_ENABLED environment variable.'
+    : 'Read-only MCP endpoint (/mcp) for AI tools.'
+);
+function setMcp(enabled: boolean) {
+  updateSettings.mutate({ mcpEnabled: enabled }, { onSuccess: () => refresh() });
+}
+
 const open = ref(false);
 const root = ref<HTMLElement | null>(null);
 onClickOutside(root, () => (open.value = false));
@@ -40,6 +53,14 @@ onClickOutside(root, () => (open.value = false));
         <div class="flex items-center justify-between rounded-md px-2 py-2">
           <span class="text-zinc-700">Cluster blips</span>
           <ToggleSwitch v-model="useClusters" />
+        </div>
+        <div class="my-1 border-t border-zinc-100" />
+        <div class="flex items-center justify-between rounded-md px-2 py-2">
+          <span class="flex items-center gap-1" :class="mcpLocked ? 'text-zinc-400' : 'text-zinc-700'">
+            MCP server
+            <Icon name="ph:info" class="h-3.5 w-3.5 cursor-help text-zinc-400" :title="mcpHint" />
+          </span>
+          <ToggleSwitch :model-value="mcpEnabled" :disabled="mcpLocked" @update:model-value="setMcp($event)" />
         </div>
       </div>
     </Transition>

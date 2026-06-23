@@ -6,7 +6,20 @@ const pkg = createRequire(import.meta.url)('./package.json');
 
 // Build a minimal Phosphor collection with only the icons the app uses, so the
 // server bundle ships those icons instead of the whole ~9k-icon set.
-const USED_ICONS = ['plus', 'minus', 'x', 'link', 'check', 'arrow-up', 'arrow-down', 'info', 'warning', 'gear-six'];
+const USED_ICONS = [
+  'plus',
+  'minus',
+  'x',
+  'link',
+  'check',
+  'arrow-up',
+  'arrow-down',
+  'info',
+  'warning',
+  'gear-six',
+  'sign-in',
+  'sign-out',
+];
 const phFull = createRequire(import.meta.url)('@iconify-json/ph/icons.json');
 const phSubset = {
   prefix: phFull.prefix,
@@ -20,13 +33,21 @@ export default defineNuxtConfig({
     compatibilityVersion: 4,
   },
 
-  modules: ['@nuxt/eslint', '@nuxt/fonts', '@nuxt/icon', '@nuxtjs/robots', '@nuxtjs/sitemap', 'nuxt-schema-org'],
+  modules: [
+    '@nuxt/eslint',
+    '@nuxt/fonts',
+    '@nuxt/icon',
+    '@nuxtjs/robots',
+    '@nuxtjs/sitemap',
+    'nuxt-schema-org',
+    'nuxt-auth-utils',
+  ],
 
-  // Self-hosted: the public URL varies per operator. Set NUXT_SITE_URL to get
-  // absolute sitemap/canonical URLs; otherwise it is inferred from the request.
+  // Self-hosted: the public URL varies per operator. Set TECHRADAR_SITE_URL to
+  // get absolute sitemap/canonical URLs; otherwise it is inferred from the request.
   site: {
     name: 'Tech Radar',
-    url: process.env.NUXT_SITE_URL,
+    url: process.env.TECHRADAR_SITE_URL,
   },
 
   // Onboarding is internal — keep it out of search indexes and the sitemap.
@@ -73,6 +94,7 @@ export default defineNuxtConfig({
       include: [
         '@tanstack/vue-query',
         '@tanstack/vue-table',
+        '@unhead/schema-org/vue',
         '@vee-validate/zod',
         '@vueuse/core',
         'motion-v',

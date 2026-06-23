@@ -1,6 +1,6 @@
 services:
   techradar:
-    image: ghcr.io/yourorg/techradar:latest
+    image: ghcr.io/marcaureln/techradar:latest
     restart: unless-stopped
     ports:
       - "3000:3000"

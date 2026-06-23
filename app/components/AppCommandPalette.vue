@@ -7,6 +7,7 @@ import type { Quadrant } from '#shared/types';
 const { open, mode, showBlips, hide, toggle } = useCommandPalette();
 const { focusQuadrant, reset } = useRadarView();
 const { data: blips } = useBlips();
+const { canEdit } = useAuth();
 
 const query = ref('');
 const activeIndex = ref(0);
@@ -32,7 +33,7 @@ const commandItems = computed<Item[]>(() => [
       return true;
     },
   },
-  { id: 'add', label: 'Add blip', hint: 'Create', run: () => navigateTo('/?add=1') },
+  ...(canEdit.value ? [{ id: 'add', label: 'Add blip', hint: 'Create', run: () => navigateTo('/?add=1') }] : []),
   { id: 'radar', label: 'Go to radar', hint: 'Navigate', run: () => navigateTo('/') },
   ...quadrantKeys.map((q) => ({
     id: `focus-${q}`,

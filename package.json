@@ -31,6 +31,7 @@
     "clsx": "^2.1.1",
     "lucide-vue-next": "^0.511",
     "motion-v": "^2.3.0",
+    "nuxt-auth-utils": "^0.5.29",
     "radix-vue": "^1",
     "reka-ui": "^2.9.10",
     "shadcn-vue": "^2.7.4",

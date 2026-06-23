@@ -35,6 +35,7 @@ export interface Settings {
   setupDone: boolean;
   name: string | null;
   description: string | null;
+  mcpEnabled: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -48,4 +49,4 @@ export type CreateBlipInput = {
   lastEvaluatedAt?: string;
 };
 export type UpdateBlipInput = Partial<CreateBlipInput> & { id?: string };
-export type SettingsInput = { setupDone?: boolean; name?: string; description?: string };
+export type SettingsInput = { setupDone?: boolean; name?: string; description?: string; mcpEnabled?: boolean };

@@ -4,11 +4,17 @@ import { SAMPLE_BLIPS } from '#shared/lib/sampleBlips';
 
 definePageMeta({
   layout: 'setup',
+  // Onboarding is an editing action: in secure mode, read-only visitors are sent home.
+  middleware: async () => {
+    const me = await $fetch<{ data: { canEdit: boolean } }>('/api/me');
+    if (!me?.data?.canEdit) return navigateTo('/');
+  },
 });
 
 const name = ref('');
 const description = ref('');
 const addSamples = ref(true);
+const enableMcp = ref(true);
 const loading = ref(false);
 const error = ref('');
 
@@ -37,6 +43,7 @@ async function open() {
       setupDone: true,
       name: name.value.trim(),
       description: description.value.trim() || undefined,
+      mcpEnabled: enableMcp.value,
     });
     await router.push('/');
   } catch (e) {
@@ -88,6 +95,18 @@ async function open() {
         <span class="text-sm">
           <span class="block font-medium text-zinc-800">Start with sample blips</span>
           <span class="block text-zinc-500">Pre-fill the radar with example technologies. Uncheck to start blank.</span>
+        </span>
+      </label>
+
+      <label
+        class="flex cursor-pointer items-start gap-2.5 rounded-md border border-zinc-200 p-3 text-left transition-colors hover:border-zinc-300"
+      >
+        <input v-model="enableMcp" type="checkbox" class="mt-0.5 h-4 w-4 accent-zinc-900" />
+        <span class="text-sm">
+          <span class="block font-medium text-zinc-800">Enable MCP server</span>
+          <span class="block text-zinc-500"
+            >Expose a read-only MCP endpoint for AI tools. You can change this later in settings.</span
+          >
         </span>
       </label>
 

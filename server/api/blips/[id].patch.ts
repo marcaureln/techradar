@@ -18,7 +18,7 @@ export default defineEventHandler(async (event) => {
               create: {
                 fromRing: existing.ring,
                 toRing: data.ring,
-                changedBy: getCallerUsername(event),
+                changedBy: await getCallerUsername(event),
               },
             },
           }

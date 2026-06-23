@@ -3,6 +3,8 @@ import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/
 // Read-only MCP endpoint over Streamable HTTP, stateless: a fresh server +
 // transport per request. No auth — secured at the proxy layer like the rest.
 export default defineEventHandler(async (event) => {
+  if (!(await mcpEnabled())) throw createError({ statusCode: 404 });
+
   const body = await readBody(event);
   const server = buildMcpServer();
   const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined });

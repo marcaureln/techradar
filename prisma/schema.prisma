@@ -12,6 +12,7 @@ model Settings {
   setupDone   Boolean  @default(false)
   name        String?
   description String?
+  mcpEnabled  Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }

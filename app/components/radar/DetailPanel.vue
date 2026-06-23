@@ -20,6 +20,7 @@ const archiveBlip = useArchiveBlip();
 const restoreBlip = useRestoreBlip();
 const { show } = useToast();
 const { copy } = useClipboard({ legacy: true });
+const { canEdit } = useAuth();
 
 const showNotes = ref(false);
 const copied = ref(false);
@@ -141,7 +142,7 @@ onUnmounted(() => {
         </span>
       </div>
 
-      <div class="flex gap-2">
+      <div v-if="canEdit" class="flex gap-2">
         <button
           class="flex h-9 items-center rounded-md border border-zinc-200 px-3 text-xs font-medium text-zinc-700 transition-colors hover:bg-zinc-50"
           @click="emit('edit', blip)"
