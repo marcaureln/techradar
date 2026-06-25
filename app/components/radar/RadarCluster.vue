@@ -27,7 +27,6 @@ const color = computed(() => {
     tabindex="-1"
     :initial="{ scale: 0.4, opacity: 0 }"
     :animate="{ scale: 1, opacity: 1 }"
-    :exit="{ scale: 0.4, opacity: 0 }"
     :transition="{ duration: 0.18 }"
     @click.stop="emit('expand')"
   >

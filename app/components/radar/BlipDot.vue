@@ -8,8 +8,6 @@ const props = defineProps<{
   blip: BlipWithHistory;
   x: number;
   y: number;
-  prevX?: number;
-  prevY?: number;
   scale?: number;
   direction?: 'up' | 'down' | null;
   fresh?: boolean;
@@ -28,15 +26,6 @@ const dirTransform = computed(() => {
 const emit = defineEmits<{ click: []; hover: [boolean] }>();
 
 const markerStyle = useMarkerStyle(props);
-
-const isNew = computed(() => props.prevX === undefined);
-const hasMoved = computed(() => !isNew.value && (props.prevX !== props.x || props.prevY !== props.y));
-
-const initial = computed(() => {
-  if (isNew.value) return { scale: 0, opacity: 0 };
-  if (hasMoved.value) return { x: props.prevX! - props.x, y: props.prevY! - props.y };
-  return false as unknown as undefined;
-});
 </script>
 
 <template>
@@ -48,12 +37,9 @@ const initial = computed(() => {
       WebkitTapHighlightColor: 'transparent',
     }"
     tabindex="-1"
-    :initial="initial"
-    :animate="{ x: 0, y: 0, scale: 1, opacity: 1 }"
-    :exit="{ scale: 0, opacity: 0 }"
-    :transition="
-      isNew ? { type: 'spring', stiffness: 200, damping: 20 } : { type: 'spring', stiffness: 80, damping: 18 }
-    "
+    :initial="{ scale: 0, opacity: 0 }"
+    :animate="{ scale: 1, opacity: 1 }"
+    :transition="{ type: 'spring', stiffness: 200, damping: 20 }"
     :while-hover="{ scale: 1.15, transition: { duration: 0.1 } }"
     @click.stop="emit('click')"
     @mouseenter="emit('hover', true)"

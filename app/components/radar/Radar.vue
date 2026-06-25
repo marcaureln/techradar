@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, watch, nextTick } from 'vue';
-import { AnimatePresence } from 'motion-v';
+import { ref, computed } from 'vue';
 import { computeBlipPositions } from '#shared/lib/radar/positions';
 import {
   QUADRANT_COLORS,
@@ -14,8 +13,6 @@ import {
 import { clusterBlips } from '#shared/lib/radar/cluster';
 import { blipDirection, isNewBlip } from '#shared/lib/radar/direction';
 import type { BlipWithHistory, Quadrant } from '#shared/types';
-
-const CACHE_KEY = 'techradar:blip-positions';
 
 const props = defineProps<{
   blips: BlipWithHistory[];
@@ -50,33 +47,6 @@ const hoveredBlip = computed(() =>
   hoveredId.value ? (filteredBlips.value.find((b) => b.id === hoveredId.value) ?? null) : null
 );
 const hoveredPos = computed(() => (hoveredId.value ? (positions.value.get(hoveredId.value) ?? null) : null));
-
-const prevPositions = ref<Record<string, { x: number; y: number }>>({});
-
-onMounted(() => {
-  try {
-    const cached = localStorage.getItem(CACHE_KEY);
-    if (cached) prevPositions.value = JSON.parse(cached);
-  } catch {
-    // position cache is best-effort: ignore unavailable/corrupt localStorage
-  }
-});
-
-function persistPositions() {
-  const next: Record<string, { x: number; y: number }> = {};
-  positions.value.forEach((pos, id) => {
-    next[id] = pos;
-  });
-  try {
-    localStorage.setItem(CACHE_KEY, JSON.stringify(next));
-  } catch {
-    // best-effort write: ignore quota / unavailable localStorage
-  }
-}
-
-watch(positions, () => {
-  nextTick(() => persistPositions());
-});
 
 const svgEl = ref<SVGSVGElement | null>(null);
 
@@ -241,35 +211,27 @@ const quadrantKeys = Object.keys(QUADRANT_LABELS) as Quadrant[];
             />
           </template>
 
-          <!-- motion-v's AnimatePresence can't render during SSR, so the animated
-               blip layer is client-only; the dots hydrate from the SSR query cache. -->
-          <ClientOnly>
-            <AnimatePresence>
-              <RadarBlipDot
-                v-for="c in singles"
-                :key="c.blips[0]!.id"
-                :blip="c.blips[0]!"
-                :x="positions.get(c.blips[0]!.id)?.x ?? CX"
-                :y="positions.get(c.blips[0]!.id)?.y ?? CY"
-                :prev-x="prevPositions[c.blips[0]!.id]?.x"
-                :prev-y="prevPositions[c.blips[0]!.id]?.y"
-                :scale="view.scale"
-                :direction="blipDirection(c.blips[0]!)"
-                :fresh="isNewBlip(c.blips[0]!)"
-                @click="handleBlipClick(c.blips[0]!)"
-                @hover="(v) => (hoveredId = v ? c.blips[0]!.id : null)"
-              />
-              <RadarCluster
-                v-for="c in groups"
-                :key="c.blips.map((b) => b.id).join(',')"
-                :x="c.x"
-                :y="c.y"
-                :blips="c.blips"
-                :scale="view.scale"
-                @expand="zoomAt({ x: c.x, y: c.y }, 2.2)"
-              />
-            </AnimatePresence>
-          </ClientOnly>
+          <RadarBlipDot
+            v-for="c in singles"
+            :key="c.blips[0]!.id"
+            :blip="c.blips[0]!"
+            :x="positions.get(c.blips[0]!.id)?.x ?? CX"
+            :y="positions.get(c.blips[0]!.id)?.y ?? CY"
+            :scale="view.scale"
+            :direction="blipDirection(c.blips[0]!)"
+            :fresh="isNewBlip(c.blips[0]!)"
+            @click="handleBlipClick(c.blips[0]!)"
+            @hover="(v) => (hoveredId = v ? c.blips[0]!.id : null)"
+          />
+          <RadarCluster
+            v-for="c in groups"
+            :key="c.blips.map((b) => b.id).join(',')"
+            :x="c.x"
+            :y="c.y"
+            :blips="c.blips"
+            :scale="view.scale"
+            @expand="zoomAt({ x: c.x, y: c.y }, 2.2)"
+          />
 
           <g
             v-if="hoveredBlip && hoveredPos"
