@@ -11,4 +11,5 @@ export default defineOAuthOidcEventHandler({
     });
     return sendRedirect(event, '/');
   },
+  onError: onOAuthError,
 });

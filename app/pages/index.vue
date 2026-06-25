@@ -14,6 +14,20 @@ const router = useRouter();
 const { data: blips, isPending } = useBlips();
 const { hideSidebar } = useRadarSettings();
 const { canEdit } = useAuth();
+const { show: showToast } = useToast();
+
+// A failed OAuth sign-in redirects back here with ?auth_error=1 instead of a 500.
+watch(
+  () => route.query.auth_error,
+  (v) => {
+    if (!v) return;
+    showToast('Sign-in failed. Check that your account is allowed, then try again.');
+    const query = { ...route.query };
+    delete query.auth_error;
+    router.replace({ query });
+  },
+  { immediate: true }
+);
 
 const selectedBlip = computed<BlipWithHistory | null>(() => {
   const n = Number(route.query.blip);

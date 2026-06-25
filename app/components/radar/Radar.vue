@@ -241,31 +241,35 @@ const quadrantKeys = Object.keys(QUADRANT_LABELS) as Quadrant[];
             />
           </template>
 
-          <AnimatePresence>
-            <RadarBlipDot
-              v-for="c in singles"
-              :key="c.blips[0]!.id"
-              :blip="c.blips[0]!"
-              :x="positions.get(c.blips[0]!.id)?.x ?? CX"
-              :y="positions.get(c.blips[0]!.id)?.y ?? CY"
-              :prev-x="prevPositions[c.blips[0]!.id]?.x"
-              :prev-y="prevPositions[c.blips[0]!.id]?.y"
-              :scale="view.scale"
-              :direction="blipDirection(c.blips[0]!)"
-              :fresh="isNewBlip(c.blips[0]!)"
-              @click="handleBlipClick(c.blips[0]!)"
-              @hover="(v) => (hoveredId = v ? c.blips[0]!.id : null)"
-            />
-            <RadarCluster
-              v-for="c in groups"
-              :key="c.blips.map((b) => b.id).join(',')"
-              :x="c.x"
-              :y="c.y"
-              :blips="c.blips"
-              :scale="view.scale"
-              @expand="zoomAt({ x: c.x, y: c.y }, 2.2)"
-            />
-          </AnimatePresence>
+          <!-- motion-v's AnimatePresence can't render during SSR, so the animated
+               blip layer is client-only; the dots hydrate from the SSR query cache. -->
+          <ClientOnly>
+            <AnimatePresence>
+              <RadarBlipDot
+                v-for="c in singles"
+                :key="c.blips[0]!.id"
+                :blip="c.blips[0]!"
+                :x="positions.get(c.blips[0]!.id)?.x ?? CX"
+                :y="positions.get(c.blips[0]!.id)?.y ?? CY"
+                :prev-x="prevPositions[c.blips[0]!.id]?.x"
+                :prev-y="prevPositions[c.blips[0]!.id]?.y"
+                :scale="view.scale"
+                :direction="blipDirection(c.blips[0]!)"
+                :fresh="isNewBlip(c.blips[0]!)"
+                @click="handleBlipClick(c.blips[0]!)"
+                @hover="(v) => (hoveredId = v ? c.blips[0]!.id : null)"
+              />
+              <RadarCluster
+                v-for="c in groups"
+                :key="c.blips.map((b) => b.id).join(',')"
+                :x="c.x"
+                :y="c.y"
+                :blips="c.blips"
+                :scale="view.scale"
+                @expand="zoomAt({ x: c.x, y: c.y }, 2.2)"
+              />
+            </AnimatePresence>
+          </ClientOnly>
 
           <g
             v-if="hoveredBlip && hoveredPos"

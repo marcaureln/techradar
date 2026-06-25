@@ -115,6 +115,14 @@ export default defineNuxtConfig({
     },
   },
 
+  // Dev: don't flag the session cookie Secure, so OAuth login works over plain
+  // http (localhost or a LAN host). Production keeps Secure cookies (needs HTTPS).
+  $development: {
+    runtimeConfig: {
+      session: { cookie: { secure: false } },
+    },
+  },
+
   app: {
     head: {
       htmlAttrs: { lang: 'en' },

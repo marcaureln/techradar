@@ -8,4 +8,5 @@ export default defineOAuthGoogleEventHandler({
     await setUserSession(event, { user: { email: user.email, name: user.name, provider: 'google' } });
     return sendRedirect(event, '/');
   },
+  onError: onOAuthError,
 });

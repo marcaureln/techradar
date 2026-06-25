@@ -8,4 +8,5 @@ export default defineOAuthGitHubEventHandler({
     await setUserSession(event, { user: { email: user.email, name: user.name ?? user.login, provider: 'github' } });
     return sendRedirect(event, '/');
   },
+  onError: onOAuthError,
 });

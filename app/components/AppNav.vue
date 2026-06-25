@@ -1,12 +1,6 @@
 <script setup lang="ts">
 const { show } = useCommandPalette();
-const { canEdit, secure, user, refresh } = useAuth();
-
-async function signOut() {
-  await $fetch('/api/auth/logout', { method: 'POST' });
-  await refresh();
-  await navigateTo('/');
-}
+const { canEdit, secure, user, signIn, signOut } = useAuth();
 </script>
 
 <template>
@@ -33,23 +27,23 @@ async function signOut() {
         Add blip
       </button>
 
-      <a
+      <button
         v-else-if="secure && !user"
-        href="/auth"
         class="inline-flex h-9 items-center gap-1.5 rounded-md bg-zinc-900 px-3.5 text-sm font-medium text-white transition-colors hover:bg-zinc-800"
+        @click="signIn"
       >
         <Icon name="ph:sign-in" class="h-4 w-4" />
         Sign in
-      </a>
+      </button>
 
       <button
         v-if="secure && user"
-        class="flex h-9 items-center gap-1.5 rounded-md border border-zinc-200 px-2.5 text-xs font-medium text-zinc-500 transition-colors hover:text-zinc-900"
+        class="flex h-9 w-9 items-center justify-center rounded-md border border-zinc-200 text-zinc-500 transition-colors hover:text-zinc-900"
         :title="`Signed in as ${user.email}${canEdit ? '' : ' (read-only)'} — sign out`"
+        aria-label="Sign out"
         @click="signOut"
       >
         <Icon name="ph:sign-out" class="h-4 w-4" />
-        Sign out
       </button>
 
       <AppSettingsMenu />

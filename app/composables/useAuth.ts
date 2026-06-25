@@ -8,10 +8,19 @@ interface Me {
   mcpEnabled: boolean;
 }
 
-// Server-resolved auth state (SSR-rendered, shared via the 'me' key). In insecure
-// mode canEdit is always true, so the edit UI behaves exactly as before.
 export function useAuth() {
   const { data, refresh } = useFetch('/api/me', { key: 'me', transform: (r: { data: Me }) => r.data });
+
+  // /auth is a server route that 302s to the provider, so navigate externally.
+  function signIn() {
+    return navigateTo('/auth', { external: true });
+  }
+  async function signOut() {
+    await $fetch('/api/auth/logout', { method: 'POST' });
+    await refresh();
+    await navigateTo('/');
+  }
+
   return {
     canEdit: computed(() => data.value?.canEdit ?? false),
     secure: computed(() => data.value?.secure ?? false),
@@ -19,5 +28,7 @@ export function useAuth() {
     provider: computed(() => data.value?.provider ?? null),
     mcpEnabled: computed(() => data.value?.mcpEnabled ?? true),
     refresh,
+    signIn,
+    signOut,
   };
 }

@@ -61,3 +61,10 @@ export async function mcpEnabled(): Promise<boolean> {
   const settings = await prisma.settings.findUnique({ where: { id: 'singleton' } });
   return settings?.mcpEnabled ?? true;
 }
+
+// Send the user back to the read-only radar instead of a raw 500 when an OAuth
+// sign-in fails (e.g. the session cookie didn't survive the provider round-trip).
+export function onOAuthError(event: H3Event, error: unknown) {
+  console.error('[auth] sign-in failed:', error instanceof Error ? error.message : error);
+  return sendRedirect(event, '/?auth_error=1');
+}

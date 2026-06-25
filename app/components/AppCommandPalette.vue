@@ -7,7 +7,7 @@ import type { Quadrant } from '#shared/types';
 const { open, mode, showBlips, hide, toggle } = useCommandPalette();
 const { focusQuadrant, reset } = useRadarView();
 const { data: blips } = useBlips();
-const { canEdit } = useAuth();
+const { canEdit, secure, user, signIn, signOut } = useAuth();
 
 const query = ref('');
 const activeIndex = ref(0);
@@ -17,6 +17,7 @@ interface Item {
   id: string;
   label: string;
   hint?: string;
+  keywords?: string;
   // Return true to keep the palette open (e.g. switching into blip search).
   run: () => unknown;
 }
@@ -53,6 +54,12 @@ const commandItems = computed<Item[]>(() => [
       navigateTo('/');
     },
   },
+  ...(secure.value && !user.value
+    ? [{ id: 'signin', label: 'Sign in', hint: 'Account', keywords: 'login', run: () => signIn() }]
+    : []),
+  ...(secure.value && user.value
+    ? [{ id: 'signout', label: 'Sign out', hint: 'Account', keywords: 'logout', run: () => signOut() }]
+    : []),
 ]);
 
 const blipItems = computed<Item[]>(() =>
@@ -68,7 +75,9 @@ const items = computed<Item[]>(() => {
   const q = query.value.trim().toLowerCase();
   const source = mode.value === 'blip' ? blipItems.value : commandItems.value;
   if (!q) return source;
-  return source.filter((i) => i.label.toLowerCase().includes(q) || i.hint?.toLowerCase().includes(q));
+  return source.filter(
+    (i) => i.label.toLowerCase().includes(q) || i.hint?.toLowerCase().includes(q) || i.keywords?.includes(q)
+  );
 });
 
 const placeholder = computed(() => (mode.value === 'blip' ? 'Search blips' : 'Search commands'));

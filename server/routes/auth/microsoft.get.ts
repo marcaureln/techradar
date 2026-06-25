@@ -9,4 +9,5 @@ export default defineOAuthMicrosoftEventHandler({
     });
     return sendRedirect(event, '/');
   },
+  onError: onOAuthError,
 });
