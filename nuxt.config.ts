@@ -43,11 +43,8 @@ export default defineNuxtConfig({
     'nuxt-auth-utils',
   ],
 
-  // Self-hosted: the public URL varies per operator. Set TECHRADAR_SITE_URL to
-  // get absolute sitemap/canonical URLs; otherwise it is inferred from the request.
   site: {
     name: 'Tech Radar',
-    url: process.env.TECHRADAR_SITE_URL,
   },
 
   // Onboarding is internal — keep it out of search indexes and the sitemap.
@@ -115,8 +112,6 @@ export default defineNuxtConfig({
     },
   },
 
-  // Dev: don't flag the session cookie Secure, so OAuth login works over plain
-  // http (localhost or a LAN host). Production keeps Secure cookies (needs HTTPS).
   $development: {
     runtimeConfig: {
       session: { cookie: { secure: false } },

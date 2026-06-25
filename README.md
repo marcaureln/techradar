@@ -28,7 +28,7 @@ All configuration is through environment variables.
 | -------------------- | -------- | ------------------------- | ------------------------------------------------------------------------ |
 | `DATABASE_URL`       | no       | `file:/data/techradar.db` | SQLite connection string. The default points at the mounted volume.      |
 | `PORT`               | no       | `3000`                    | HTTP port the server listens on.                                         |
-| `TECHRADAR_SITE_URL` | no       | inferred from request     | Public URL (e.g. `https://radar.example.com`). Sets canonical/sitemap URLs. |
+| `SITE_URL`           | no       | inferred from request     | Public URL (e.g. `https://radar.example.com`). Sets canonical/sitemap URLs. |
 | `MCP_ENABLED`        | no       | `true`                    | Open mode only: set to `false` to disable the MCP server. In secure mode use the in-app toggle instead. |
 
 ## Secure mode
