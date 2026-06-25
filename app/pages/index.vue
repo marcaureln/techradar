@@ -16,7 +16,6 @@ const { hideSidebar } = useRadarSettings();
 const { canEdit } = useAuth();
 const { show: showToast } = useToast();
 
-// A failed OAuth sign-in redirects back here with ?auth_error=1 instead of a 500.
 watch(
   () => route.query.auth_error,
   (v) => {

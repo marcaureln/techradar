@@ -7,7 +7,6 @@ export function configuredProviders(): Provider[] {
   return PROVIDERS.filter((p) => !!process.env[`${p.toUpperCase()}_CLIENT_ID`]);
 }
 
-// Secure mode is implicit: it's on as soon as one OAuth provider is configured.
 export function activeProvider(): Provider | null {
   return configuredProviders()[0] ?? null;
 }
@@ -25,7 +24,7 @@ function editorEmails(): string[] {
 
 export function isAllowed(email?: string | null): boolean {
   const list = editorEmails();
-  if (list.length === 0) return true; // no list -> any authenticated user can edit
+  if (list.length === 0) return true;
   return !!email && list.includes(email.toLowerCase());
 }
 
@@ -36,8 +35,6 @@ export interface SessionUser {
 }
 
 export async function sessionUser(event: H3Event): Promise<SessionUser | null> {
-  // No provider configured means no session cookie (and no session password to
-  // unseal it with), so there is never a user to read.
   if (!isSecure()) return null;
   const { user } = await getUserSession(event);
   return (user as SessionUser) ?? null;
@@ -55,15 +52,11 @@ function envFlag(value: string | undefined, fallback: boolean): boolean {
 }
 
 export async function mcpEnabled(): Promise<boolean> {
-  // Open mode has no in-app admin, so MCP is controlled by the MCP_ENABLED env var
-  // (default on). In secure mode it's the persisted, admin-toggleable setting.
   if (!isSecure()) return envFlag(process.env.MCP_ENABLED, true);
   const settings = await prisma.settings.findUnique({ where: { id: 'singleton' } });
   return settings?.mcpEnabled ?? true;
 }
 
-// Send the user back to the read-only radar instead of a raw 500 when an OAuth
-// sign-in fails (e.g. the session cookie didn't survive the provider round-trip).
 export function onOAuthError(event: H3Event, error: unknown) {
   console.error('[auth] sign-in failed:', error instanceof Error ? error.message : error);
   return sendRedirect(event, '/?auth_error=1');

@@ -11,7 +11,6 @@ interface Me {
 export function useAuth() {
   const { data, refresh } = useFetch('/api/me', { key: 'me', transform: (r: { data: Me }) => r.data });
 
-  // /auth is a server route that 302s to the provider, so navigate externally.
   function signIn() {
     return navigateTo('/auth', { external: true });
   }

@@ -1,7 +1,5 @@
 import { VueQueryPlugin, QueryClient, dehydrate, hydrate, type DehydratedState } from '@tanstack/vue-query';
 
-// Pass the server-fetched query cache to the client so SSR data (e.g. blips) is
-// present on first paint instead of relying on a client refetch.
 export default defineNuxtPlugin((nuxt) => {
   const vueQueryState = useState<DehydratedState | null>('vue-query');
 

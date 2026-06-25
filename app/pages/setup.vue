@@ -4,7 +4,6 @@ import { SAMPLE_BLIPS } from '#shared/lib/sampleBlips';
 
 definePageMeta({
   layout: 'setup',
-  // Onboarding is an editing action: in secure mode, read-only visitors are sent home.
   middleware: async () => {
     const me = await $fetch<{ data: { canEdit: boolean } }>('/api/me');
     if (!me?.data?.canEdit) return navigateTo('/');
