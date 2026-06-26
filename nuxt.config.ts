@@ -23,6 +23,7 @@ const USED_ICONS = [
   'copy',
   'bug',
   'arrow-elbow-down-left',
+  'spinner-gap',
 ];
 const phFull = createRequire(import.meta.url)('@iconify-json/ph/icons.json');
 const phSubset = {

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const { show } = useCommandPalette();
-const { canEdit, secure, user, signIn, signOut } = useAuth();
+const { canEdit, secure, user, signIn, signOut, signingIn, signingOut } = useAuth();
 </script>
 
 <template>
@@ -29,21 +29,31 @@ const { canEdit, secure, user, signIn, signOut } = useAuth();
 
       <button
         v-else-if="secure && !user"
-        class="inline-flex h-9 items-center gap-1.5 rounded-md bg-zinc-900 px-3.5 text-sm font-medium text-white transition-colors hover:bg-zinc-800"
+        :disabled="signingIn"
+        class="inline-flex h-9 items-center gap-1.5 rounded-md bg-zinc-900 px-3.5 text-sm font-medium text-white transition-colors hover:bg-zinc-800 disabled:opacity-70"
         @click="signIn"
       >
-        <Icon name="ph:sign-in" class="h-4 w-4" />
+        <Icon
+          :name="signingIn ? 'ph:spinner-gap' : 'ph:sign-in'"
+          class="h-4 w-4"
+          :class="{ 'animate-spin': signingIn }"
+        />
         Sign in
       </button>
 
       <button
         v-if="secure && user"
-        class="flex h-9 w-9 items-center justify-center rounded-md border border-zinc-200 text-zinc-500 transition-colors hover:text-zinc-900"
+        :disabled="signingOut"
+        class="flex h-9 w-9 items-center justify-center rounded-md border border-zinc-200 text-zinc-500 transition-colors hover:text-zinc-900 disabled:opacity-70"
         :title="`Signed in as ${user.email}${canEdit ? '' : ' (read-only)'} — sign out`"
         aria-label="Sign out"
         @click="signOut"
       >
-        <Icon name="ph:sign-out" class="h-4 w-4" />
+        <Icon
+          :name="signingOut ? 'ph:spinner-gap' : 'ph:sign-out'"
+          class="h-4 w-4"
+          :class="{ 'animate-spin': signingOut }"
+        />
       </button>
 
       <AppSettingsMenu />

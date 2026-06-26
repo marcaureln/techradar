@@ -10,14 +10,22 @@ interface Me {
 
 export function useAuth() {
   const { data, refresh } = useFetch('/api/me', { key: 'me', transform: (r: { data: Me }) => r.data });
+  const signingIn = useState('auth:signingIn', () => false);
+  const signingOut = useState('auth:signingOut', () => false);
 
   function signIn() {
+    signingIn.value = true;
     return navigateTo('/auth', { external: true });
   }
   async function signOut() {
-    await $fetch('/api/auth/logout', { method: 'POST' });
-    await refresh();
-    await navigateTo('/');
+    signingOut.value = true;
+    try {
+      await $fetch('/api/auth/logout', { method: 'POST' });
+      await refresh();
+      await navigateTo('/');
+    } finally {
+      signingOut.value = false;
+    }
   }
 
   return {
@@ -29,5 +37,7 @@ export function useAuth() {
     refresh,
     signIn,
     signOut,
+    signingIn,
+    signingOut,
   };
 }
