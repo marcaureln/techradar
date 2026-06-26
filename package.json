@@ -5,10 +5,9 @@
   "type": "module",
   "packageManager": "pnpm@11.8.0",
   "scripts": {
-    "build": "nuxt build",
+    "build": "prisma generate && nuxt build",
     "dev": "nuxt dev --host",
-    "generate": "nuxt generate",
-    "preview": "nuxt preview",
+    "preview": "prisma migrate deploy && nuxt preview",
     "postinstall": "nuxt prepare && (git rev-parse --git-dir >/dev/null 2>&1 && git config core.hooksPath .githooks || true)",
     "lint": "eslint .",
     "test": "vitest run",
