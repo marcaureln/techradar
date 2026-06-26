@@ -1,4 +1,5 @@
 import type { EventHandler, H3Event } from 'h3';
+import { randomBytes, timingSafeEqual } from 'node:crypto';
 
 const PROVIDERS = ['google', 'microsoft', 'github', 'oidc'] as const;
 export type Provider = (typeof PROVIDERS)[number];
@@ -55,6 +56,28 @@ export async function mcpEnabled(): Promise<boolean> {
   if (!isSecure()) return envFlag(process.env.MCP_ENABLED, true);
   const settings = await prisma.settings.findUnique({ where: { id: 'singleton' } });
   return settings?.mcpEnabled ?? true;
+}
+
+export function generateMcpToken(): string {
+  return `tr_mcp_${randomBytes(24).toString('base64url')}`;
+}
+
+export async function getMcpToken(): Promise<string | null> {
+  const settings = await prisma.settings.findUnique({ where: { id: 'singleton' } });
+  return settings?.mcpToken ?? null;
+}
+
+// MCP write tools are gated by a Bearer token matching the stored one (secure mode only).
+export async function mcpCanWrite(event: H3Event): Promise<boolean> {
+  if (!isSecure()) return false;
+  const stored = await getMcpToken();
+  if (!stored) return false;
+  const header = getHeader(event, 'authorization') ?? '';
+  const provided = header.startsWith('Bearer ') ? header.slice(7).trim() : '';
+  if (!provided) return false;
+  const a = Buffer.from(provided);
+  const b = Buffer.from(stored);
+  return a.length === b.length && timingSafeEqual(a, b);
 }
 
 export function oauthRedirectURL(provider: Provider): string | undefined {

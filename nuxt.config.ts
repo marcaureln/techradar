@@ -20,6 +20,9 @@ const USED_ICONS = [
   'sign-in',
   'sign-out',
   'github-logo',
+  'copy',
+  'bug',
+  'arrow-elbow-down-left',
 ];
 const phFull = createRequire(import.meta.url)('@iconify-json/ph/icons.json');
 const phSubset = {

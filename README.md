@@ -73,11 +73,46 @@ back to the radar.
 
 ## MCP server
 
-Tech Radar exposes a read-only [MCP](https://modelcontextprotocol.io/) endpoint at
-`/mcp` so AI tools can query the radar. It is **enabled by default**.
+Tech Radar exposes an [MCP](https://modelcontextprotocol.io/) endpoint at `/mcp` (Streamable
+HTTP) so AI tools can work with the radar. It is **enabled by default**.
 
 - In open mode it is on by default; set `MCP_ENABLED=false` to disable it.
 - In secure mode an editor can turn it off from **Settings**.
+
+**Read tools** (list, search, overview, due for review) are always available. **Write tools**
+(create, update, archive, restore, mark reviewed) only work in secure mode and only for a request
+that carries a token. Generate the token in **Settings** (an editor sees it there) and send it as
+a Bearer header.
+
+### Connect from Claude Code
+
+```sh
+claude mcp add --transport http techradar https://radar.example.com/mcp \
+  --header "Authorization: Bearer <your-token>"
+```
+
+Or in `.mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "techradar": {
+      "type": "http",
+      "url": "https://radar.example.com/mcp",
+      "headers": { "Authorization": "Bearer <your-token>" }
+    }
+  }
+}
+```
+
+Without the header you still get the read tools; with a valid token the write tools appear too.
+
+### Hosted assistants (claude.ai, Claude Desktop, ChatGPT)
+
+These connect to remote MCP servers only through an interactive OAuth flow, which Tech Radar does
+not implement. They cannot present the static token, so the write tools are out of reach from them.
+For write access use Claude Code, or any MCP client that lets you set a custom `Authorization`
+header.
 
 ## Development
 

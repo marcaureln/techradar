@@ -1,14 +1,17 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
-import { createBlipSchema } from '#shared/validations/blip';
+import { createBlipSchema, updateBlipSchema } from '#shared/validations/blip';
 import { QUADRANT_KEYS, RING_KEYS } from '#shared/types';
 import { QUADRANT_LABELS, RING_LABELS } from '#shared/lib/radar/constants';
 import { isDue, daysUntilDue } from '#shared/lib/radar/review';
 import type { BlipWithHistory } from '#shared/types';
+import { prisma } from './db';
+import { createBlip, updateBlip, markReviewed, archiveBlip, restoreBlip } from './blip';
 
 const json = (data: unknown) => ({ content: [{ type: 'text' as const, text: JSON.stringify(data, null, 2) }] });
 
-const summary = (b: BlipWithHistory) => ({
+type BlipSummary = Pick<BlipWithHistory, 'id' | 'number' | 'name' | 'quadrant' | 'ring' | 'isArchived'>;
+const summary = (b: BlipSummary) => ({
   id: b.id,
   number: b.number,
   name: b.name,
@@ -33,7 +36,7 @@ function listBlips(archived = false) {
   }).then((r) => r.data);
 }
 
-export function buildMcpServer() {
+export function buildMcpServer({ canWrite = false }: { canWrite?: boolean } = {}) {
   const server = new McpServer({ name: 'techradar', version: '1.0.0' });
 
   server.registerTool(
@@ -132,5 +135,61 @@ export function buildMcpServer() {
     }
   );
 
+  if (canWrite) registerWriteTools(server);
+
   return server;
+}
+
+function registerWriteTools(server: McpServer) {
+  server.registerTool(
+    'create_blip',
+    { description: 'Create a new blip.', inputSchema: createBlipSchema.shape },
+    async (input) => json(summary(await createBlip(input)))
+  );
+
+  server.registerTool(
+    'update_blip',
+    {
+      description: 'Update a blip by id. Changing the ring records a history entry.',
+      inputSchema: { id: z.string(), ...updateBlipSchema.shape },
+    },
+    async ({ id, ...data }) => {
+      const existing = await prisma.blip.findUnique({ where: { id } });
+      if (!existing) return json({ error: `No blip ${id}` });
+      return json(summary(await updateBlip(id, existing.ring, data, 'mcp')));
+    }
+  );
+
+  server.registerTool(
+    'mark_blip_reviewed',
+    {
+      description: 'Mark a blip reviewed as of now (records a no-change history entry).',
+      inputSchema: { id: z.string() },
+    },
+    async ({ id }) => {
+      const existing = await prisma.blip.findUnique({ where: { id } });
+      if (!existing) return json({ error: `No blip ${id}` });
+      return json(summary(await markReviewed(id, existing.ring, 'mcp')));
+    }
+  );
+
+  server.registerTool(
+    'archive_blip',
+    { description: 'Archive (soft-delete) a blip by id.', inputSchema: { id: z.string() } },
+    async ({ id }) => {
+      const existing = await prisma.blip.findUnique({ where: { id } });
+      if (!existing) return json({ error: `No blip ${id}` });
+      return json(summary(await archiveBlip(id)));
+    }
+  );
+
+  server.registerTool(
+    'restore_blip',
+    { description: 'Restore an archived blip by id.', inputSchema: { id: z.string() } },
+    async ({ id }) => {
+      const existing = await prisma.blip.findUnique({ where: { id } });
+      if (!existing) return json({ error: `No blip ${id}` });
+      return json(summary(await restoreBlip(id)));
+    }
+  );
 }

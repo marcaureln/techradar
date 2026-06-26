@@ -18,6 +18,7 @@ export default defineEventHandler(async (event) => {
       description: data.description ?? null,
       mcpEnabled: data.mcpEnabled ?? true,
     },
+    omit: { mcpToken: true },
   });
 
   return ok(settings);

@@ -13,6 +13,7 @@ model Settings {
   name        String?
   description String?
   mcpEnabled  Boolean  @default(true)
+  mcpToken    String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
