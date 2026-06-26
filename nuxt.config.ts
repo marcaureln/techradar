@@ -37,24 +37,9 @@ export default defineNuxtConfig({
     compatibilityVersion: 4,
   },
 
-  modules: [
-    '@nuxt/eslint',
-    '@nuxt/fonts',
-    '@nuxt/icon',
-    '@nuxtjs/robots',
-    '@nuxtjs/sitemap',
-    'nuxt-schema-org',
-    'nuxt-auth-utils',
-  ],
+  ssr: false,
 
-  site: {
-    name: 'Tech Radar',
-  },
-
-  // Onboarding is internal — keep it out of search indexes and the sitemap.
-  routeRules: {
-    '/setup': { robots: false },
-  },
+  modules: ['@nuxt/eslint', '@nuxt/fonts', '@nuxt/icon', 'nuxt-auth-utils'],
 
   // Ship only the icons actually used instead of the whole Phosphor
   // collection. Keeps the bundle small and fully offline (server + client).
@@ -95,7 +80,6 @@ export default defineNuxtConfig({
       include: [
         '@tanstack/vue-query',
         '@tanstack/vue-table',
-        '@unhead/schema-org/vue',
         '@vee-validate/zod',
         '@vueuse/core',
         'motion-v',
