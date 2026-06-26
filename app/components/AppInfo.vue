@@ -30,6 +30,15 @@ const version = useRuntimeConfig().public.version;
           </a>
           <span class="text-xs text-zinc-400">v{{ version }}</span>
         </div>
+        <a
+          href="https://github.com/marcaureln/techradar/issues/new"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="mt-2 flex items-center gap-1.5 text-zinc-500 transition-colors hover:text-zinc-900"
+        >
+          <Icon name="ph:bug" class="h-4 w-4" />
+          Report a bug
+        </a>
       </div>
     </Transition>
 

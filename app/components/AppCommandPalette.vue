@@ -54,6 +54,13 @@ const commandItems = computed<Item[]>(() => [
       navigateTo('/');
     },
   },
+  {
+    id: 'report-bug',
+    label: 'Report a bug',
+    hint: 'Help',
+    keywords: 'issue github feedback',
+    run: () => window.open('https://github.com/marcaureln/techradar/issues/new', '_blank', 'noopener'),
+  },
   ...(secure.value && !user.value
     ? [{ id: 'signin', label: 'Sign in', hint: 'Account', keywords: 'login', run: () => signIn() }]
     : []),
