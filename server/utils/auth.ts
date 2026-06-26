@@ -1,4 +1,4 @@
-import type { H3Event } from 'h3';
+import type { EventHandler, H3Event } from 'h3';
 
 const PROVIDERS = ['google', 'microsoft', 'github', 'oidc'] as const;
 export type Provider = (typeof PROVIDERS)[number];
@@ -57,7 +57,23 @@ export async function mcpEnabled(): Promise<boolean> {
   return settings?.mcpEnabled ?? true;
 }
 
+export function oauthRedirectURL(provider: Provider): string | undefined {
+  const base = process.env.SITE_URL?.replace(/\/+$/, '');
+  return base ? `${base}/auth/${provider}` : undefined;
+}
+
 export function onOAuthError(event: H3Event, error: unknown) {
-  console.error('[auth] sign-in failed:', error instanceof Error ? error.message : error);
+  const detail = (error as { data?: unknown })?.data ?? (error instanceof Error ? error.message : error);
+  console.error('[auth] sign-in failed:', detail);
   return sendRedirect(event, '/?auth_error=1');
+}
+
+export function withOAuthErrorHandling(handler: EventHandler): EventHandler {
+  return defineEventHandler(async (event) => {
+    try {
+      return await handler(event);
+    } catch (error) {
+      return onOAuthError(event, error);
+    }
+  });
 }
