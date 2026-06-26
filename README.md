@@ -5,6 +5,8 @@ I first heard about tech radars on [A la French](https://open.spotify.com/show/2
 versions from companies like [Zalando](https://opensource.zalando.com/tech-radar/).
 I liked the idea of a single honest picture of what a team should use or hold, so I built this self-hosted one to run my own.
 
+![Tech Radar](.github/screenshot.png)
+
 ## Quick start
 
 Run it open (anyone can view and edit). Good for a trusted network or a quick try:
@@ -58,7 +60,16 @@ to start, so the login path is never ambiguous.
 | `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET`             | Enable GitHub sign-in.                                                     |
 | `OIDC_CLIENT_ID` / `OIDC_CLIENT_SECRET` / `OIDC_ISSUER` | Enable any OpenID Connect provider (Authentik, Keycloak, Authelia, Okta, ...). `OIDC_ISSUER` is the issuer URL. |
 
-Once configured, the server shows a **Sign in** button in the nav. Clicking it redirects to your provider's login page. After signing in you are redirected back to the radar.
+Two things are required for OAuth to work:
+
+- **Serve it over HTTPS** (e.g. behind a reverse proxy). The login cookies are `Secure`, so
+  browsers drop them over plain HTTP and the sign-in never completes.
+- **Set `SITE_URL`** to the public URL (e.g. `https://radar.example.com`), and register
+  `SITE_URL/auth/<provider>` as the redirect/callback URI in your provider, where
+  `<provider>` is `google`, `microsoft`, `github`, or `oidc`.
+
+Once configured, the nav shows a **Sign in** button that redirects to your provider and
+back to the radar.
 
 ## MCP server
 
