@@ -39,8 +39,8 @@ const groups = computed(() =>
     <div v-else class="space-y-4">
       <div v-for="group in groups" :key="group.ring">
         <div class="group/ring relative mb-1 flex items-center gap-2 px-2">
-          <span class="text-xs font-medium tracking-wide text-zinc-400 uppercase">{{ group.label }}</span>
-          <span class="text-xs text-zinc-300">{{ group.blips.length }}</span>
+          <span class="text-xs font-medium tracking-wide text-zinc-600 uppercase">{{ group.label }}</span>
+          <span class="text-xs text-zinc-500">{{ group.blips.length }}</span>
           <div
             class="pointer-events-none absolute top-full left-2 z-50 mt-1 w-52 rounded-lg border border-zinc-200 bg-white p-3 text-xs leading-relaxed text-zinc-600 opacity-0 transition-opacity duration-150 group-hover/ring:opacity-100"
           >

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { QUADRANT_COLORS, QUADRANT_LABELS } from '#shared/lib/radar/constants';
+import { QUADRANT_COLORS, QUADRANT_TEXT_COLORS, QUADRANT_LABELS } from '#shared/lib/radar/constants';
 import type { Quadrant } from '#shared/types';
 
 const props = defineProps<{
@@ -18,9 +18,9 @@ function chipStyle(key: Quadrant) {
     return { borderColor: color, backgroundColor: color, color: '#fff' };
   }
   if (props.focused) {
-    return { borderColor: '#e4e4e7', backgroundColor: 'transparent', color: '#a1a1aa' };
+    return { borderColor: '#e4e4e7', backgroundColor: 'transparent', color: '#71717a' };
   }
-  return { borderColor: `${color}40`, backgroundColor: `${color}10`, color };
+  return { borderColor: `${color}40`, backgroundColor: `${color}10`, color: QUADRANT_TEXT_COLORS[key] };
 }
 </script>
 

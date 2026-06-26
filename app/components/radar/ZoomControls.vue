@@ -15,7 +15,7 @@ const { view, zoomByButton, reset } = useRadarView();
     <button
       class="flex h-9 min-w-9 items-center justify-center rounded-md px-2 text-xs font-medium text-zinc-500 tabular-nums transition-colors hover:bg-zinc-100"
       title="Reset view"
-      aria-label="Reset view"
+      :aria-label="`Reset view (${Math.round(view.scale * 100)}%)`"
       @click="reset"
     >
       {{ Math.round(view.scale * 100) }}%

@@ -124,7 +124,7 @@ onUnmounted(() => {
       </div>
 
       <div v-if="blip.history.length > 0" class="mb-4">
-        <h3 class="mb-2 text-xs font-medium tracking-wide text-zinc-400 uppercase">Ring history</h3>
+        <h3 class="mb-2 text-xs font-medium tracking-wide text-zinc-500 uppercase">Ring history</h3>
         <div class="space-y-1">
           <div v-for="h in blip.history" :key="h.id" class="flex items-center gap-2 text-xs text-zinc-500">
             <span class="font-medium">{{ RING_LABELS[h.fromRing] }}</span>

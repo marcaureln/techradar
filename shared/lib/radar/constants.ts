@@ -5,6 +5,13 @@ export const QUADRANT_COLORS: Record<string, string> = {
   languages: '#BA7517',
 };
 
+export const QUADRANT_TEXT_COLORS: Record<string, string> = {
+  techniques: '#188562',
+  tools: '#534AB7',
+  platforms: '#C2512B',
+  languages: '#A46714',
+};
+
 export const QUADRANT_LABELS: Record<string, string> = {
   techniques: 'Techniques',
   tools: 'Tools',
