@@ -28,10 +28,10 @@ export const RING_DESCRIPTIONS: Record<string, string> = {
 };
 
 export const QUADRANT_START: Record<string, number> = {
-  techniques: 0,
-  tools: 270,
-  platforms: 180,
-  languages: 90,
+  techniques: 270,
+  tools: 0,
+  platforms: 90,
+  languages: 180,
 };
 
 export const RING_OUTER = [57.5, 115, 172.5, 230] as const;

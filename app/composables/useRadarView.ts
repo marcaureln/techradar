@@ -4,10 +4,10 @@ import type { Quadrant } from '#shared/types';
 
 const FOCUS_SCALE = 1.85;
 const FOCUS_CENTERS: Record<Quadrant, { x: number; y: number }> = {
-  techniques: { x: 380, y: 180 }, // NE
-  languages: { x: 380, y: 380 }, // SE
-  platforms: { x: 180, y: 380 }, // SW
-  tools: { x: 180, y: 180 }, // NW
+  techniques: { x: 180, y: 180 }, // NW
+  tools: { x: 380, y: 180 }, // NE
+  platforms: { x: 380, y: 380 }, // SE
+  languages: { x: 180, y: 380 }, // SW
 };
 const MIN_SCALE = 0.8;
 const MAX_SCALE = 6;
