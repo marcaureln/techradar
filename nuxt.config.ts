@@ -19,6 +19,7 @@ const USED_ICONS = [
   'gear-six',
   'sign-in',
   'sign-out',
+  'github-logo',
 ];
 const phFull = createRequire(import.meta.url)('@iconify-json/ph/icons.json');
 const phSubset = {

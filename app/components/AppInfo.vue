@@ -17,21 +17,19 @@ const version = useRuntimeConfig().public.version;
       leave-active-class="transition duration-100 ease-in"
       leave-to-class="translate-y-1 opacity-0"
     >
-      <div v-if="open" class="absolute bottom-11 left-0 w-60 rounded-lg border border-zinc-200 bg-white p-4 text-sm">
-        <div class="flex items-baseline justify-between">
-          <span class="font-medium text-zinc-900">Tech Radar</span>
-          <span class="text-xs text-zinc-400">v{{ version }}</span>
-        </div>
-        <p class="mt-2 text-zinc-500">
-          Built by
+      <div v-if="open" class="absolute bottom-11 left-0 w-56 rounded-lg border border-zinc-200 bg-white p-3 text-sm">
+        <div class="flex items-center justify-between">
           <a
-            href="https://marcaureln.com"
+            href="https://github.com/marcaureln/techradar"
             target="_blank"
             rel="noopener noreferrer"
-            class="font-medium text-zinc-900 underline decoration-zinc-300 underline-offset-2 transition-colors hover:decoration-zinc-900"
-            >Alex N'Guessan</a
-          >.
-        </p>
+            class="flex items-center gap-1.5 font-medium text-zinc-900 transition-colors hover:text-zinc-600"
+          >
+            <Icon name="ph:github-logo" class="h-4 w-4" />
+            Tech Radar
+          </a>
+          <span class="text-xs text-zinc-400">v{{ version }}</span>
+        </div>
       </div>
     </Transition>
 
