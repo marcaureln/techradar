@@ -140,6 +140,14 @@ export function buildMcpServer({ canWrite = false }: { canWrite?: boolean } = {}
   return server;
 }
 
+type ExistingBlip = NonNullable<Awaited<ReturnType<typeof prisma.blip.findUnique>>>;
+
+async function withExistingBlip(id: string, run: (blip: ExistingBlip) => Promise<BlipSummary>) {
+  const existing = await prisma.blip.findUnique({ where: { id } });
+  if (!existing) return json({ error: `No blip ${id}` });
+  return json(summary(await run(existing)));
+}
+
 function registerWriteTools(server: McpServer) {
   server.registerTool(
     'create_blip',
@@ -153,11 +161,7 @@ function registerWriteTools(server: McpServer) {
       description: 'Update a blip by id. Changing the ring records a history entry.',
       inputSchema: { id: z.string(), ...updateBlipSchema.shape },
     },
-    async ({ id, ...data }) => {
-      const existing = await prisma.blip.findUnique({ where: { id } });
-      if (!existing) return json({ error: `No blip ${id}` });
-      return json(summary(await updateBlip(id, existing.ring, data, 'mcp')));
-    }
+    async ({ id, ...data }) => withExistingBlip(id, (blip) => updateBlip(id, blip.ring, data, 'mcp'))
   );
 
   server.registerTool(
@@ -166,30 +170,18 @@ function registerWriteTools(server: McpServer) {
       description: 'Mark a blip reviewed as of now (records a no-change history entry).',
       inputSchema: { id: z.string() },
     },
-    async ({ id }) => {
-      const existing = await prisma.blip.findUnique({ where: { id } });
-      if (!existing) return json({ error: `No blip ${id}` });
-      return json(summary(await markReviewed(id, existing.ring, 'mcp')));
-    }
+    async ({ id }) => withExistingBlip(id, (blip) => markReviewed(id, blip.ring, 'mcp'))
   );
 
   server.registerTool(
     'archive_blip',
     { description: 'Archive (soft-delete) a blip by id.', inputSchema: { id: z.string() } },
-    async ({ id }) => {
-      const existing = await prisma.blip.findUnique({ where: { id } });
-      if (!existing) return json({ error: `No blip ${id}` });
-      return json(summary(await archiveBlip(id)));
-    }
+    async ({ id }) => withExistingBlip(id, () => archiveBlip(id))
   );
 
   server.registerTool(
     'restore_blip',
     { description: 'Restore an archived blip by id.', inputSchema: { id: z.string() } },
-    async ({ id }) => {
-      const existing = await prisma.blip.findUnique({ where: { id } });
-      if (!existing) return json({ error: `No blip ${id}` });
-      return json(summary(await restoreBlip(id)));
-    }
+    async ({ id }) => withExistingBlip(id, () => restoreBlip(id))
   );
 }

@@ -36,7 +36,7 @@ const selectedBlip = computed<BlipWithHistory | null>(() => {
 const selectedId = computed(() => selectedBlip.value?.id ?? null);
 
 function selectBlip(blip: BlipWithHistory) {
-  showAddSheet.value = false; // never both panels at once
+  showAddSheet.value = false;
   router.replace({ query: { ...route.query, blip: blip.number } });
 }
 function clearSelection() {
@@ -45,8 +45,6 @@ function clearSelection() {
   router.replace({ query });
 }
 
-// Close the detail panel on any click outside it, except the radar and sidebar,
-// which handle their own selection (so clicking another blip switches panels).
 const detailPanel = ref(null);
 const radarArea = ref<HTMLElement | null>(null);
 const sidebarArea = ref<HTMLElement | null>(null);
@@ -57,7 +55,7 @@ const editingBlip = ref<BlipWithHistory | null>(null);
 
 function openAdd() {
   if (!canEdit.value) return;
-  if (selectedBlip.value) clearSelection(); // close the detail panel first
+  if (selectedBlip.value) clearSelection();
   editingBlip.value = null;
   showAddSheet.value = true;
 }

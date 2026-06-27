@@ -6,7 +6,6 @@ import type { CreateBlipInput, UpdateBlipInput } from '#shared/types';
 
 export const withHistory = { history: { orderBy: { changedAt: 'desc' } } } as const;
 
-// Validate the :id param and load the blip, 404ing if it's missing.
 export async function requireBlip(event: H3Event) {
   const id = getRouterParam(event, 'id');
   if (!id) fail('Missing id');
@@ -15,8 +14,6 @@ export async function requireBlip(event: H3Event) {
   return { id, existing };
 }
 
-// Mutations shared by the REST handlers and the MCP write tools. `changedBy`
-// is the session email over REST and 'mcp' over the token-authed MCP endpoint.
 export async function createBlip(input: CreateBlipInput) {
   const { _max } = await prisma.blip.aggregate({ _max: { number: true } });
   return prisma.blip.create({

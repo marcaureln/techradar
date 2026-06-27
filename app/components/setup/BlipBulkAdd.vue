@@ -23,8 +23,6 @@ function focusName() {
 onMounted(focusName);
 watch(name, () => (notice.value = ''));
 
-// A blip is a duplicate if its name (case-insensitive) and quadrant already exist;
-// the same name in a different quadrant is allowed.
 function isDuplicate(n: string, q: string) {
   const lower = n.toLowerCase();
   return blips.value.some((b) => b.name.toLowerCase() === lower && b.quadrant === q);

@@ -53,6 +53,5 @@ export const RING_INDEX: Record<string, number> = {
 export const CX = 280;
 export const CY = 280;
 export const RMAX = 230;
-export const BLIP_RADIUS = 11;
 
 export const MS_PER_DAY = 86_400_000;

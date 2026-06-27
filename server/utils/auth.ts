@@ -67,7 +67,6 @@ export async function getMcpToken(): Promise<string | null> {
   return settings?.mcpToken ?? null;
 }
 
-// MCP write tools are gated by a Bearer token matching the stored one (secure mode only).
 export async function mcpCanWrite(event: H3Event): Promise<boolean> {
   if (!isSecure()) return false;
   const stored = await getMcpToken();

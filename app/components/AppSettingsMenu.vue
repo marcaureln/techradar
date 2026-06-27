@@ -16,7 +16,6 @@ function setMcp(enabled: boolean) {
   updateSettings.mutate({ mcpEnabled: enabled }, { onSuccess: () => refresh() });
 }
 
-// A token lets AI tools write via MCP; only relevant for an editor in secure mode.
 const showMcpToken = computed(() => secure.value && canEdit.value && mcpEnabled.value);
 const { token, regenerate } = useMcpToken(showMcpToken);
 const tokenShort = computed(() => (token.value ? `${token.value.slice(0, 16)}…` : ''));

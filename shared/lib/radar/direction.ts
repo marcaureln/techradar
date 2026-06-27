@@ -15,7 +15,6 @@ export function blipDirection(blip: Pick<BlipWithHistory, 'history'>): BlipDirec
 
 const NEW_DAYS = 30;
 
-// A blip is "new" when it was added recently and has never moved rings.
 export function isNewBlip(blip: Pick<BlipWithHistory, 'history' | 'createdAt'>): boolean {
   if (blip.history?.length) return false;
   return Date.now() - new Date(blip.createdAt).getTime() < NEW_DAYS * MS_PER_DAY;

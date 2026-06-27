@@ -1,7 +1,5 @@
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 
-// MCP endpoint over Streamable HTTP, stateless: a fresh server + transport per
-// request. Read tools are open; write tools require a Bearer token (secure mode).
 export default defineEventHandler(async (event) => {
   if (!(await mcpEnabled())) throw createError({ statusCode: 404 });
 

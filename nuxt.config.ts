@@ -4,8 +4,6 @@ import tailwindcss from '@tailwindcss/vite';
 
 const pkg = createRequire(import.meta.url)('./package.json');
 
-// Build a minimal Phosphor collection with only the icons the app uses, so the
-// server bundle ships those icons instead of the whole ~9k-icon set.
 const USED_ICONS = [
   'plus',
   'minus',
@@ -42,8 +40,6 @@ export default defineNuxtConfig({
 
   modules: ['@nuxt/eslint', '@nuxt/fonts', '@nuxt/icon', 'nuxt-auth-utils'],
 
-  // Ship only the icons actually used instead of the whole Phosphor
-  // collection. Keeps the bundle small and fully offline (server + client).
   icon: {
     serverBundle: { collections: [phSubset] },
     clientBundle: { icons: USED_ICONS.map((n) => `ph:${n}`) },
@@ -51,7 +47,6 @@ export default defineNuxtConfig({
 
   css: ['~/assets/css/main.css'],
 
-  // Self-hosted at build; Satoshi for body, Bitcount Prop Single for the title.
   fonts: {
     families: [
       { name: 'Satoshi', provider: 'fontshare', weights: [400, 500], styles: ['normal'] },
@@ -63,7 +58,7 @@ export default defineNuxtConfig({
 
   devtools: { enabled: true },
 
-  components: [{ path: '~/components', ignore: ['ui/**'] }],
+  components: ['~/components'],
 
   alias: {
     '#shared': resolve(__dirname, 'shared'),
@@ -80,7 +75,6 @@ export default defineNuxtConfig({
     optimizeDeps: {
       include: [
         '@tanstack/vue-query',
-        '@tanstack/vue-table',
         '@vee-validate/zod',
         '@vueuse/core',
         'motion-v',

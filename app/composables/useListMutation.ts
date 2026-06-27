@@ -5,8 +5,6 @@ function errorMessage(e: unknown): string {
   return err?.data?.message || err?.statusMessage || err?.message || 'Something went wrong.';
 }
 
-// Wraps a list mutation with the shared optimistic-update plumbing: snapshot +
-// rollback on error (with a toast), and invalidate on settle.
 export function useListMutation<TVars, TItem>(
   key: QueryKey,
   mutationFn: (vars: TVars) => Promise<unknown>,

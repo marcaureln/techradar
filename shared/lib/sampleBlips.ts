@@ -1,10 +1,5 @@
 import type { CreateBlipInput } from '../types/index';
 
-// Seed blips used when an operator chooses "start with sample blips" during
-// onboarding. A spread across all four quadrants and rings so a fresh radar
-// looks alive on first open.
-// reviewDaysAgo backdates the last evaluation so a few blips start overdue
-// (>90 days), surfacing the "needs review" state on a fresh radar.
 export type SampleBlip = CreateBlipInput & { reviewDaysAgo?: number };
 
 export const SAMPLE_BLIPS: SampleBlip[] = [

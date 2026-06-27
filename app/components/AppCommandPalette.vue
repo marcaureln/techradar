@@ -18,7 +18,6 @@ interface Item {
   label: string;
   hint?: string;
   keywords?: string;
-  // Return true to keep the palette open (e.g. switching into blip search).
   run: () => unknown;
 }
 
@@ -125,7 +124,6 @@ function onKeydown(e: KeyboardEvent) {
     runActive();
   } else if (e.key === 'Escape') {
     e.preventDefault();
-    // From blip search, step back to the command menu first.
     if (mode.value === 'blip') {
       mode.value = 'command';
       query.value = '';
@@ -133,7 +131,6 @@ function onKeydown(e: KeyboardEvent) {
   }
 }
 
-// Global shortcuts: Cmd/Ctrl+K = command menu, "/" = blip search.
 useEventListener('keydown', (e: KeyboardEvent) => {
   if (e.key.toLowerCase() === 'k' && (e.metaKey || e.ctrlKey)) {
     e.preventDefault();
