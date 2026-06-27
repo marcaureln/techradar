@@ -38,7 +38,7 @@ export default defineNuxtConfig({
 
   ssr: false,
 
-  modules: ['@nuxt/eslint', '@nuxt/fonts', '@nuxt/icon', 'nuxt-auth-utils'],
+  modules: ['@nuxt/eslint', '@nuxt/icon', 'nuxt-auth-utils'],
 
   icon: {
     serverBundle: { collections: [phSubset] },
@@ -46,13 +46,6 @@ export default defineNuxtConfig({
   },
 
   css: ['~/assets/css/main.css'],
-
-  fonts: {
-    families: [
-      { name: 'Satoshi', provider: 'fontshare', weights: [400, 500], styles: ['normal'] },
-      { name: 'Bitcount Prop Single', provider: 'google', weights: [400], styles: ['normal'] },
-    ],
-  },
 
   compatibilityDate: '2025-07-01',
 
@@ -105,7 +98,10 @@ export default defineNuxtConfig({
     head: {
       htmlAttrs: { lang: 'en' },
       title: 'Tech Radar',
-      link: [{ rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
+      link: [
+        { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
+        { rel: 'preload', as: 'font', type: 'font/woff2', href: '/fonts/satoshi-400.woff2', crossorigin: '' },
+      ],
     },
   },
 });

@@ -35,7 +35,6 @@
   "devDependencies": {
     "@iconify-json/ph": "^1.2.2",
     "@nuxt/eslint": "^1",
-    "@nuxt/fonts": "^0",
     "@tailwindcss/vite": "^4.3.1",
     "@vitest/coverage-v8": "^3",
     "@vue/test-utils": "^2",
