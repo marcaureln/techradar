@@ -13,7 +13,7 @@ const props = defineProps<{
   fresh?: boolean;
 }>();
 
-const DIR_R = 15.4;
+const DIR_R = 13;
 const dirPath = computed(() =>
   props.direction ? `M ${props.x - DIR_R} ${props.y} A ${DIR_R} ${DIR_R} 0 0 0 ${props.x + DIR_R} ${props.y} Z` : null
 );
@@ -63,13 +63,13 @@ const markerStyle = useMarkerStyle(props);
         stroke-width="1.5"
         stroke-opacity="0.6"
       />
-      <circle :cx="x" :cy="y" :r="11" :fill="QUADRANT_COLORS[blip.quadrant]" />
+      <circle :cx="x" :cy="y" :r="9" :fill="QUADRANT_COLORS[blip.quadrant]" />
       <text
         :x="x"
         :y="y"
         text-anchor="middle"
         dominant-baseline="central"
-        font-size="9"
+        font-size="8"
         font-weight="500"
         fill="white"
         style="pointer-events: none; user-select: none"

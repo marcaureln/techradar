@@ -7,7 +7,7 @@ describe('clusterBlips', () => {
   it('merges blips within the threshold at scale 1', () => {
     const positions = new Map([
       ['a', { x: 100, y: 100 }],
-      ['b', { x: 120, y: 100 }], // 20 apart < 24 -> merge
+      ['b', { x: 116, y: 100 }], // 16 apart < 18 -> merge
       ['c', { x: 300, y: 300 }],
     ]);
     const clusters = clusterBlips([b('a'), b('b'), b('c')], positions, 1);
@@ -19,7 +19,7 @@ describe('clusterBlips', () => {
   it('splits when zoomed in (higher scale shrinks the threshold)', () => {
     const positions = new Map([
       ['a', { x: 100, y: 100 }],
-      ['b', { x: 120, y: 100 }], // 20 apart; scale 2 -> threshold 12 -> separate
+      ['b', { x: 120, y: 100 }], // 20 apart; scale 2 -> threshold 9 -> separate
     ]);
     expect(clusterBlips([b('a'), b('b')], positions, 2)).toHaveLength(2);
   });
@@ -27,11 +27,19 @@ describe('clusterBlips', () => {
   it('cluster centroid is the mean of its members', () => {
     const positions = new Map([
       ['a', { x: 100, y: 100 }],
-      ['b', { x: 120, y: 100 }],
+      ['b', { x: 110, y: 100 }],
     ]);
     const [c] = clusterBlips([b('a'), b('b')], positions, 1);
-    expect(c.x).toBe(110);
+    expect(c.x).toBe(105);
     expect(c.y).toBe(100);
+  });
+
+  it('stops clustering once zoomed past the cutoff', () => {
+    const positions = new Map([
+      ['a', { x: 100, y: 100 }],
+      ['b', { x: 104, y: 100 }], // 4 apart, but scale 3 disables clustering
+    ]);
+    expect(clusterBlips([b('a'), b('b')], positions, 3)).toHaveLength(2);
   });
 
   it('ignores blips without a position', () => {

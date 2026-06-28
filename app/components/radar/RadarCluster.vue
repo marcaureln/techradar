@@ -31,14 +31,14 @@ const color = computed(() => {
     @click.stop="emit('expand')"
   >
     <g :style="markerStyle">
-      <circle :cx="x" :cy="y" r="14" fill="#fff" />
-      <circle :cx="x" :cy="y" r="14" :fill="color" fill-opacity="0.18" :stroke="color" stroke-width="1.5" />
+      <circle :cx="x" :cy="y" r="11" fill="#fff" />
+      <circle :cx="x" :cy="y" r="11" :fill="color" fill-opacity="0.18" :stroke="color" stroke-width="1.5" />
       <text
         :x="x"
         :y="y"
         text-anchor="middle"
         dominant-baseline="central"
-        font-size="11"
+        font-size="9"
         font-weight="600"
         :fill="color"
         style="pointer-events: none; user-select: none"

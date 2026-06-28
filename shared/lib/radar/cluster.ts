@@ -4,14 +4,15 @@ export interface BlipCluster<T> {
   blips: T[];
 }
 
-const MERGE_DIST = 24;
+const MERGE_DIST = 18;
+const NO_CLUSTER_SCALE = 2.5;
 
 export function clusterBlips<T extends { id: string }>(
   blips: T[],
   positions: Map<string, { x: number; y: number }>,
   scale: number
 ): BlipCluster<T>[] {
-  const threshold = MERGE_DIST / Math.max(scale, 0.0001);
+  const threshold = scale >= NO_CLUSTER_SCALE ? 0 : MERGE_DIST / Math.max(scale, 0.0001);
   const thresholdSq = threshold * threshold;
   const clusters: { x: number; y: number; sumX: number; sumY: number; blips: T[] }[] = [];
 
