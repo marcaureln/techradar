@@ -1,8 +1,6 @@
-name: CI
+name: Release
 
 on:
-  pull_request:
-    branches: [main]
   push:
     branches: [main]
 
@@ -14,36 +12,7 @@ env:
   IMAGE: ghcr.io/marcaureln/techradar
 
 jobs:
-  validate:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-      - uses: pnpm/action-setup@v6
-      - uses: actions/setup-node@v6
-        with:
-          node-version: 24.17.0
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm prisma generate
-      - run: pnpm lint
-      - run: pnpm test
-      - run: pnpm build
-
-  version-check:
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-node@v6
-        with:
-          node-version: 24.17.0
-      - run: node scripts/check-version.mjs
-
   build:
-    if: github.event_name == 'push'
-    needs: [validate]
     strategy:
       fail-fast: false
       matrix:
@@ -88,7 +57,6 @@ jobs:
           retention-days: 1
 
   publish:
-    if: github.event_name == 'push'
     needs: [build]
     runs-on: ubuntu-latest
     steps:

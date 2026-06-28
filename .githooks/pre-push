@@ -1,2 +1,4 @@
 #!/bin/sh
-exec node scripts/check-version.mjs
+set -e
+pnpm lint
+node scripts/check-version.mjs
