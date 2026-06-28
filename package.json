@@ -10,8 +10,6 @@
     "preview": "prisma migrate deploy && nuxt preview",
     "postinstall": "nuxt prepare && (git rev-parse --git-dir >/dev/null 2>&1 && git config core.hooksPath .githooks || true)",
     "lint": "eslint .",
-    "test": "vitest run",
-    "test:watch": "vitest",
     "db:migrate": "prisma migrate dev",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
@@ -36,8 +34,6 @@
     "@iconify-json/ph": "^1.2.2",
     "@nuxt/eslint": "^1",
     "@tailwindcss/vite": "^4.3.1",
-    "@vitest/coverage-v8": "^3",
-    "@vue/test-utils": "^2",
     "eslint": "^9",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.6",
@@ -47,7 +43,6 @@
     "prisma": "^6",
     "tailwindcss": "^4",
     "typescript": "^5",
-    "vitest": "^3",
     "vue-tsc": "^2"
   },
   "volta": {
