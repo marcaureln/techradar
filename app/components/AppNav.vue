@@ -4,12 +4,15 @@ const { canEdit, secure, user, signIn, signOut, signingIn, signingOut } = useAut
 </script>
 
 <template>
-  <nav class="flex items-center justify-between border-b border-zinc-200 bg-white px-6 py-3">
-    <NuxtLink to="/" class="font-title text-xl tracking-normal text-zinc-900 transition-opacity hover:opacity-70">
+  <nav class="flex items-center justify-between px-6 py-3">
+    <NuxtLink
+      to="/"
+      class="pointer-events-auto font-title text-xl tracking-normal text-zinc-900 transition-opacity hover:opacity-70"
+    >
       Tech Radar
     </NuxtLink>
 
-    <div class="flex items-center gap-2">
+    <div class="pointer-events-auto flex items-center gap-2">
       <button
         class="flex h-9 items-center gap-1 rounded-md border border-zinc-200 px-2.5 text-xs font-medium text-zinc-400 transition-colors hover:text-zinc-700"
         title="Search and commands"
@@ -45,7 +48,7 @@ const { canEdit, secure, user, signIn, signOut, signingIn, signingOut } = useAut
         v-if="secure && user"
         :disabled="signingOut"
         class="flex h-9 w-9 items-center justify-center rounded-md border border-zinc-200 text-zinc-500 transition-colors hover:text-zinc-900 disabled:opacity-70"
-        :title="`Signed in as ${user.email}${canEdit ? '' : ' (read-only)'} — sign out`"
+        :title="`Sign out (${user.email}${canEdit ? '' : ', read-only'})`"
         aria-label="Sign out"
         @click="signOut"
       >

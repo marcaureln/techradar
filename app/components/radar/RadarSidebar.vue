@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref, onMounted, watch, nextTick } from 'vue';
 import { QUADRANT_COLORS, RING_LABELS, RING_DESCRIPTIONS } from '#shared/lib/radar/constants';
 import { isDue } from '#shared/lib/radar/review';
 import type { BlipWithHistory, Ring } from '#shared/types';
@@ -23,10 +23,50 @@ const groups = computed(() =>
     blips: props.blips.filter((b) => b.ring === ring).sort((a, b) => a.number - b.number),
   })).filter((g) => g.blips.length > 0)
 );
+
+const scroller = ref<HTMLElement | null>(null);
+const atTop = ref(true);
+const atBottom = ref(true);
+function updateEdges() {
+  const el = scroller.value;
+  if (!el) return;
+  atTop.value = el.scrollTop <= 0;
+  atBottom.value = el.scrollTop + el.clientHeight >= el.scrollHeight - 1;
+}
+onMounted(updateEdges);
+watch(
+  () => props.blips,
+  () => nextTick(updateEdges)
+);
+
+const maskStyle = computed(() => {
+  const stops = [
+    atTop.value ? '#000 0' : 'transparent 0',
+    ...(atTop.value ? [] : ['#000 28px']),
+    ...(atBottom.value ? [] : ['#000 calc(100% - 28px)']),
+    atBottom.value ? '#000 100%' : 'transparent 100%',
+  ];
+  const gradient = `linear-gradient(to bottom, ${stops.join(', ')})`;
+  return { maskImage: gradient, WebkitMaskImage: gradient };
+});
+
+const tip = ref<{ text: string; x: number; y: number } | null>(null);
+function showTip(e: MouseEvent, ring: Ring) {
+  const r = (e.currentTarget as HTMLElement).getBoundingClientRect();
+  tip.value = { text: RING_DESCRIPTIONS[ring], x: r.right + 8, y: r.top };
+}
+function hideTip() {
+  tip.value = null;
+}
 </script>
 
 <template>
-  <aside class="h-full w-56 shrink-0 overflow-y-auto pr-1">
+  <aside
+    ref="scroller"
+    :style="maskStyle"
+    class="scroll-fade h-full w-56 shrink-0 overflow-y-auto pr-1 pb-14"
+    @scroll="updateEdges"
+  >
     <div v-if="loading" class="space-y-4">
       <div v-for="g in 3" :key="g" class="space-y-2">
         <Skeleton class="h-3 w-16" />
@@ -38,14 +78,11 @@ const groups = computed(() =>
 
     <div v-else class="space-y-4">
       <div v-for="group in groups" :key="group.ring">
-        <div class="group/ring relative mb-1 flex items-center gap-2 px-2">
-          <span class="text-xs font-medium tracking-wide text-zinc-600 uppercase">{{ group.label }}</span>
-          <span class="text-xs text-zinc-500">{{ group.blips.length }}</span>
-          <div
-            class="pointer-events-none absolute top-full left-2 z-50 mt-1 w-52 rounded-lg border border-zinc-200 bg-white p-3 text-xs leading-relaxed text-zinc-600 opacity-0 transition-opacity duration-150 group-hover/ring:opacity-100"
-          >
-            {{ RING_DESCRIPTIONS[group.ring] }}
-          </div>
+        <div class="mb-1 flex px-2">
+          <span class="inline-flex items-center gap-2" @mouseenter="showTip($event, group.ring)" @mouseleave="hideTip">
+            <span class="text-xs font-medium tracking-wide text-zinc-600 uppercase">{{ group.label }}</span>
+            <span class="text-xs text-zinc-500">{{ group.blips.length }}</span>
+          </span>
         </div>
         <ul>
           <li v-for="blip in group.blips" :key="blip.id">
@@ -55,7 +92,7 @@ const groups = computed(() =>
                 selectedId === blip.id ? 'bg-amber-50 text-zinc-900' : 'text-zinc-600 hover:bg-zinc-100',
                 hoveredId === blip.id && selectedId !== blip.id ? 'bg-zinc-100' : '',
               ]"
-              @click="emit('select', blip)"
+              @click.stop="emit('select', blip)"
               @mouseenter="hoveredId = blip.id"
               @mouseleave="hoveredId = null"
             >
@@ -77,5 +114,15 @@ const groups = computed(() =>
         </ul>
       </div>
     </div>
+
+    <Teleport to="body">
+      <div
+        v-if="tip"
+        :style="{ left: `${tip.x}px`, top: `${tip.y}px` }"
+        class="pointer-events-none fixed z-[70] w-48 rounded-lg border border-zinc-200 bg-white p-3 text-xs leading-relaxed text-zinc-600 shadow-md"
+      >
+        {{ tip.text }}
+      </div>
+    </Teleport>
   </aside>
 </template>

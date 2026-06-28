@@ -1,9 +1,9 @@
 <template>
-  <div class="flex h-dvh flex-col overflow-hidden bg-zinc-50">
-    <AppNav class="shrink-0" />
-    <main class="min-h-0 flex-1 overflow-y-auto">
+  <div class="relative h-dvh overflow-hidden bg-zinc-50">
+    <main class="h-full overflow-hidden">
       <slot />
     </main>
+    <AppNav class="pointer-events-none absolute inset-x-0 top-0 z-50" />
     <AppCommandPalette />
     <Toaster />
     <AppInfo />

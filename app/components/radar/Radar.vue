@@ -126,7 +126,8 @@ function handleBlipClick(blip: BlipWithHistory) {
   emit('select', blip);
 }
 
-function onBackgroundClick() {
+function onBackgroundClick(e: MouseEvent) {
+  e.stopPropagation();
   if (moved) return;
   emit('deselect');
 }
@@ -152,6 +153,16 @@ function quadrantLabelPos(q: Quadrant): { x: number; y: number } {
 
 const ringLabels = ['Adopt', 'Trial', 'Assess', 'Hold'];
 const quadrantKeys = Object.keys(QUADRANT_LABELS) as Quadrant[];
+
+const quadrantLines = Object.fromEntries(
+  quadrantKeys.map((q) => {
+    const label = QUADRANT_LABELS[q];
+    const lines = label.includes(' & ')
+      ? label.split(' & ').map((part, i, all) => (i < all.length - 1 ? `${part} &` : part))
+      : [label];
+    return [q, lines];
+  })
+) as Record<Quadrant, string[]>;
 </script>
 
 <template>
@@ -167,7 +178,7 @@ const quadrantKeys = Object.keys(QUADRANT_LABELS) as Quadrant[];
         preserveAspectRatio="xMidYMid meet"
         class="h-full max-h-full w-full touch-none select-none"
         :style="{
-          maxWidth: hideSidebar ? '820px' : '600px',
+          maxWidth: hideSidebar ? '1040px' : '800px',
           cursor: dragging ? 'grabbing' : 'grab',
           transition: 'max-width 0.25s ease',
         }"
@@ -289,7 +300,14 @@ const quadrantKeys = Object.keys(QUADRANT_LABELS) as Quadrant[];
               stroke-linejoin="round"
               class="pointer-events-none select-none"
             >
-              {{ QUADRANT_LABELS[key] }}
+              <tspan
+                v-for="(line, i) in quadrantLines[key]"
+                :key="i"
+                :x="quadrantLabelPos(key).x"
+                :dy="i === 0 ? (1 - quadrantLines[key].length) * 6 : 12"
+              >
+                {{ line }}
+              </tspan>
             </text>
           </template>
         </g>

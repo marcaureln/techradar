@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
 import { motion, AnimatePresence } from 'motion-v';
-import { onClickOutside } from '@vueuse/core';
 import type { BlipWithHistory } from '#shared/types';
 
 definePageMeta({
@@ -45,10 +44,16 @@ function clearSelection() {
   router.replace({ query });
 }
 
-const detailPanel = ref(null);
-const radarArea = ref<HTMLElement | null>(null);
-const sidebarArea = ref<HTMLElement | null>(null);
-onClickOutside(detailPanel, () => selectedBlip.value && clearSelection(), { ignore: [radarArea, sidebarArea] });
+const detailPanel = ref<{ $el?: HTMLElement } | null>(null);
+
+function onDocClick(e: MouseEvent) {
+  if (!selectedBlip.value) return;
+  const el = detailPanel.value?.$el;
+  if (el && el.contains(e.target as Node)) return;
+  clearSelection();
+}
+onMounted(() => document.addEventListener('click', onDocClick));
+onUnmounted(() => document.removeEventListener('click', onDocClick));
 
 const showAddSheet = ref(false);
 const editingBlip = ref<BlipWithHistory | null>(null);
@@ -85,11 +90,10 @@ watch(
 </script>
 
 <template>
-  <div class="relative z-40 mx-auto flex h-full max-w-7xl flex-col px-4 pt-10 pb-4">
+  <div class="relative z-40 mx-auto flex h-full w-full max-w-[1600px] flex-col px-6 pt-16 pb-4">
     <div class="flex min-h-0 flex-1 gap-6">
       <div
-        ref="sidebarArea"
-        class="hidden h-full shrink-0 overflow-hidden md:block"
+        class="hidden h-full shrink-0 overflow-hidden lg:block"
         :style="{ width: hideSidebar ? '0px' : '14rem', transition: 'width 0.25s ease' }"
       >
         <RadarSidebar
@@ -100,12 +104,12 @@ watch(
           @select="selectBlip"
         />
       </div>
-      <div ref="radarArea" class="flex min-w-0 flex-1 items-center justify-center">
+      <div class="flex min-w-0 flex-1 items-center justify-center">
         <RadarSkeleton v-if="isPending" />
         <Radar v-else class="h-full w-full" :blips="blips ?? []" @select="selectBlip" @deselect="clearSelection" />
       </div>
       <div
-        class="hidden h-full shrink-0 md:block"
+        class="hidden h-full shrink-0 lg:block"
         :style="{ width: hideSidebar ? '0px' : '14rem', transition: 'width 0.25s ease' }"
         aria-hidden="true"
       />
@@ -131,7 +135,7 @@ watch(
       leave-active-class="transition-opacity duration-150"
       leave-to-class="opacity-0"
     >
-      <div v-if="showAddSheet" class="fixed inset-0 z-40 bg-black/30" @click="closeSheet" />
+      <div v-if="showAddSheet" class="fixed inset-0 z-50 bg-black/30" @click="closeSheet" />
     </Transition>
     <AnimatePresence>
       <motion.aside
@@ -140,7 +144,7 @@ watch(
         :animate="{ x: 0 }"
         :exit="{ x: '100%' }"
         :transition="{ type: 'spring', stiffness: 300, damping: 30 }"
-        class="fixed top-0 right-0 z-50 h-full w-full max-w-md bg-white"
+        class="fixed top-0 right-0 z-[60] h-full w-full max-w-md bg-white"
       >
         <LazyRadarAddEditSheet :blip="editingBlip" @close="closeSheet" />
       </motion.aside>

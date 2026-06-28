@@ -45,6 +45,7 @@ const version = useRuntimeConfig().public.version;
     <button
       class="flex h-9 w-9 items-center justify-center rounded-full border border-zinc-200 bg-white text-zinc-400 transition-colors hover:text-zinc-700"
       :aria-expanded="open"
+      title="About"
       aria-label="About this app"
       @click="open = !open"
     >

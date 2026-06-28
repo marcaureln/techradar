@@ -63,7 +63,7 @@ onUnmounted(() => {
     :animate="{ x: 0 }"
     :exit="{ x: '100%' }"
     :transition="{ type: 'spring', stiffness: 300, damping: 30 }"
-    class="fixed top-0 right-0 z-50 h-full w-96 overflow-y-auto border-l border-zinc-200 bg-white"
+    class="fixed top-0 right-0 z-[60] h-full w-96 overflow-y-auto border-l border-zinc-200 bg-white"
     @click.stop
   >
     <div class="p-6">
@@ -89,6 +89,7 @@ onUnmounted(() => {
           </button>
           <button
             class="flex h-8 w-8 items-center justify-center rounded-md text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-600"
+            title="Close"
             aria-label="Close"
             @click="emit('close')"
           >

@@ -31,6 +31,7 @@ onClickOutside(root, () => (open.value = false));
     <button
       class="flex h-9 w-9 items-center justify-center rounded-md border border-zinc-200 text-zinc-500 transition-colors hover:text-zinc-900"
       :aria-expanded="open"
+      title="Settings"
       aria-label="Settings"
       @click="open = !open"
     >
